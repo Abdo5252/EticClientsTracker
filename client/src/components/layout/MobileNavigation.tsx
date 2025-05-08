@@ -32,7 +32,7 @@ export function MobileNavigation({ onToggleSidebar }: MobileNavigationProps) {
         {/* Sidebar toggle button */}
         <button
           onClick={onToggleSidebar}
-          className="flex flex-col items-center justify-center px-3 py-2 rounded-lg text-blue-200 hover:text-white hover:bg-blue-800 transition-colors"
+          className="flex flex-col items-center justify-center px-3 py-2 rounded-lg text-white hover:text-white hover:bg-blue-800 transition-colors"
           aria-label="Toggle sidebar"
         >
           <div className="mb-1">
@@ -50,7 +50,7 @@ export function MobileNavigation({ onToggleSidebar }: MobileNavigationProps) {
               "flex flex-col items-center justify-center px-3 py-2 rounded-lg transition-colors",
               location === item.path 
                 ? "text-white bg-blue-800" 
-                : "text-blue-200 hover:text-white hover:bg-blue-800"
+                : "text-white hover:text-white hover:bg-blue-800"
             )}
           >
             <div className="mb-1">{item.icon}</div>

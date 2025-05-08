@@ -110,7 +110,7 @@ export default function Login() {
             >
               {isLoading ? (
                 <div className="flex items-center justify-center">
-                  <div className="w-5 h-5 border-2 border-blue-200 border-t-transparent rounded-full animate-spin ml-2"></div>
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin ml-2"></div>
                   <span>{t('common.loading')}</span>
                 </div>
               ) : t('login.loginButton')}

@@ -40,7 +40,7 @@ export function Sidebar({ className }: SidebarProps) {
     )}>
       <div className="p-5 border-b border-blue-800">
         <h2 className="text-xl font-bold text-white text-right">{t('common.appName')}</h2>
-        <p className="text-sm text-blue-200 text-right">{t('common.appDescription')}</p>
+        <p className="text-sm text-white text-right">{t('common.appDescription')}</p>
       </div>
       
       <nav className="mt-4 px-3 flex-grow overflow-y-auto">
@@ -53,7 +53,7 @@ export function Sidebar({ className }: SidebarProps) {
                   "flex items-center px-4 py-3 rounded-lg transition-colors text-right",
                   location === item.path 
                     ? "bg-blue-800 text-white" 
-                    : "text-blue-100 hover:bg-blue-800 hover:text-white"
+                    : "text-white hover:bg-blue-800 hover:text-white"
                 )}
               >
                 <span className="ml-3 flex items-center justify-center text-white order-2">
@@ -71,7 +71,7 @@ export function Sidebar({ className }: SidebarProps) {
           <div className="flex items-center justify-end">
             <div>
               <h4 className="font-medium text-white text-right">{user.displayName}</h4>
-              <p className="text-xs text-blue-200 text-right">{user.role === 'admin' ? t('users.roles.admin') : t('users.roles.user')}</p>
+              <p className="text-xs text-white text-right">{user.role === 'admin' ? t('users.roles.admin') : t('users.roles.user')}</p>
             </div>
             <div className="w-10 h-10 rounded-full bg-blue-700 flex items-center justify-center mr-3 text-white">
               <span className="text-lg font-semibold">

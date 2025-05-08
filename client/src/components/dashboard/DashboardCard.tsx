@@ -21,24 +21,24 @@ export function DashboardCard({
 }: DashboardCardProps) {
   const colorClasses = {
     primary: {
-      border: 'border-primary',
-      bg: 'bg-primary-50',
-      text: 'text-primary'
+      border: 'border-blue-600',
+      bg: 'bg-blue-100',
+      text: 'text-blue-800'
     },
     secondary: {
-      border: 'border-secondary',
-      bg: 'bg-secondary-light',
-      text: 'text-secondary'
+      border: 'border-purple-600',
+      bg: 'bg-purple-100',
+      text: 'text-purple-800'
     },
     warning: {
-      border: 'border-warning',
-      bg: 'bg-accent-light',
-      text: 'text-warning'
+      border: 'border-orange-600',
+      bg: 'bg-orange-100',
+      text: 'text-orange-800'
     },
     success: {
-      border: 'border-success',
-      bg: 'bg-green-50',
-      text: 'text-success'
+      border: 'border-green-600',
+      bg: 'bg-green-100',
+      text: 'text-green-800'
     }
   };
 
@@ -55,7 +55,7 @@ export function DashboardCard({
           {change !== undefined && (
             <div className={cn(
               "mt-1 text-xs flex items-center",
-              change >= 0 ? "text-success" : "text-error"
+              change >= 0 ? "text-green-700" : "text-red-700"
             )}>
               <i className={cn(
                 "ml-1",
