@@ -2,6 +2,13 @@ import { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { useLocation } from 'wouter';
 import { t } from '@/lib/i18n';
+import { 
+  Menu, 
+  Bell, 
+  Calendar, 
+  ChevronDown, 
+  Search 
+} from 'lucide-react';
 
 interface HeaderProps {
   title?: string;
@@ -39,44 +46,59 @@ export function Header({ title, onToggleSidebar }: HeaderProps) {
   return (
     <header className="bg-white border-b border-gray-200 py-4 px-6">
       <div className="flex items-center justify-between">
+        {/* Mobile menu toggle */}
         <div className="md:hidden">
-          <button className="text-gray-500 hover:text-gray-700" onClick={onToggleSidebar}>
-            <i className="ri-menu-line text-2xl"></i>
+          <button 
+            className="text-gray-500 hover:text-gray-700 p-1 rounded-md hover:bg-gray-100 transition-colors" 
+            onClick={onToggleSidebar}
+            aria-label="Toggle menu"
+          >
+            <Menu className="h-6 w-6" />
           </button>
         </div>
         
-        <h1 className="text-xl font-bold text-gray-800 md:text-2xl hidden md:block">{getTitle()}</h1>
+        {/* Page Title */}
+        <h1 className="text-xl font-bold text-gray-800 md:text-2xl flex-1 text-right md:text-center">{getTitle()}</h1>
         
+        {/* Right side controls */}
         <div className="flex items-center space-x-4 space-x-reverse">
-          <button className="relative text-gray-500 hover:text-gray-700">
-            <i className="ri-notification-3-line text-xl"></i>
-            <span className="absolute top-0 right-0 h-2 w-2 rounded-full bg-error"></span>
+          {/* Notifications */}
+          <button className="relative text-gray-500 hover:text-gray-700 p-1 rounded-md hover:bg-gray-100 transition-colors">
+            <Bell className="h-5 w-5" />
+            <span className="absolute top-0 right-0 h-2 w-2 rounded-full bg-red-500"></span>
           </button>
           
-          <div className="relative">
-            <button className="flex items-center border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:border-primary-500">
-              <span>
-                {timeFilter === 'today' && t('dashboard.today')}
-                {timeFilter === 'yesterday' && t('dashboard.yesterday')}
-                {timeFilter === 'week' && t('dashboard.week')}
-                {timeFilter === 'month' && t('dashboard.month')}
-              </span>
-              <i className="ri-arrow-down-s-line mr-1"></i>
-            </button>
-          </div>
+          {/* Time Filter Dropdown - Only show on dashboard */}
+          {location === '/' && (
+            <div className="relative">
+              <button className="flex items-center border border-gray-300 rounded-lg px-3 py-1.5 text-sm hover:border-primary-500 transition-colors">
+                <Calendar className="h-4 w-4 ml-2 text-gray-500" />
+                <span>
+                  {timeFilter === 'today' && t('dashboard.today')}
+                  {timeFilter === 'yesterday' && t('dashboard.yesterday')}
+                  {timeFilter === 'week' && t('dashboard.week')}
+                  {timeFilter === 'month' && t('dashboard.month')}
+                </span>
+                <ChevronDown className="mr-1 h-4 w-4 text-gray-500" />
+              </button>
+            </div>
+          )}
         </div>
       </div>
       
-      <div className="mt-4">
-        <div className="relative">
-          <input 
-            type="text" 
-            placeholder={t('clients.search')}
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg" 
-          />
-          <i className="ri-search-line absolute left-3 top-2.5 text-gray-400"></i>
+      {/* Search Bar - Only show on relevant pages */}
+      {(location === '/clients' || location === '/invoices' || location === '/payments') && (
+        <div className="mt-4">
+          <div className="relative">
+            <Search className="absolute right-3 top-2.5 h-5 w-5 text-gray-400" />
+            <input 
+              type="text" 
+              placeholder={t('clients.search')}
+              className="w-full pr-10 py-2 border border-gray-300 rounded-lg focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-colors" 
+            />
+          </div>
         </div>
-      </div>
+      )}
     </header>
   );
 }

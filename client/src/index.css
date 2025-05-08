@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Import Cairo font from Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap');
+
 :root {
   --background: 0 0% 100%;
   --foreground: 20 14.3% 4.1%;
@@ -68,10 +71,22 @@
   html, body {
     direction: rtl;
     text-align: right;
-    @apply font-sans antialiased bg-gray-50 text-gray-800;
+    @apply antialiased bg-gray-50 text-gray-800;
     font-family: 'Cairo', sans-serif;
   }
   
+  /* Improved typography for Arabic */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Cairo', sans-serif;
+    font-weight: 700;
+    line-height: 1.4;
+  }
+  
+  p, span, div, button, input, select, textarea {
+    font-family: 'Cairo', sans-serif;
+  }
+  
+  /* Hide scrollbars but maintain functionality */
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
@@ -81,10 +96,16 @@
     scrollbar-width: none;
   }
   
+  /* Form controls focus state */
   input:focus, select:focus, textarea:focus {
     outline: none;
     border-color: hsl(var(--primary));
     box-shadow: 0 0 0 2px rgba(30, 64, 175, 0.2);
+  }
+
+  /* Placeholder styling for RTL */
+  ::placeholder {
+    text-align: right;
   }
 
   /* RTL specific adjustments */
@@ -95,13 +116,64 @@
   /* Adjustments for form controls */
   .form-control, 
   .input-group, 
-  .dropdown-menu {
+  .dropdown-menu,
+  input,
+  select,
+  textarea {
     text-align: right;
   }
 
   /* Adjust table headers and cells */
   th, td {
     text-align: right;
+  }
+
+  /* Specific RTL fixes for shadcn components */
+  .radix-select-trigger {
+    direction: rtl;
+  }
+
+  .radix-select-content {
+    direction: rtl;
+    text-align: right;
+  }
+  
+  .radix-dropdown-menu-content {
+    direction: rtl;
+    text-align: right;
+  }
+  
+  /* Badge RTL support */
+  .badge {
+    direction: rtl;
+  }
+  
+  /* Dialog RTL support */
+  .radix-dialog-content {
+    direction: rtl;
+  }
+  
+  /* Tooltip RTL support */
+  .radix-tooltip-content {
+    direction: rtl;
+  }
+  
+  /* Card RTL support */
+  .card-header, .card-footer {
+    text-align: right;
+  }
+  
+  /* Fix button icon alignment for RTL */
+  button svg + span,
+  a svg + span {
+    margin-right: 0.5rem;
+    margin-left: 0;
+  }
+  
+  span + svg,
+  a span + svg {
+    margin-right: 0.5rem;
+    margin-left: 0;
   }
 
   /* Fix margins and paddings for RTL */
@@ -115,19 +187,43 @@
     margin-left: 0 !important;
   }
 
-  .pe-* {
-    padding-left: var(--padding-value) !important;
-    padding-right: 0 !important;
-  }
-
-  .ps-* {
-    padding-right: var(--padding-value) !important;
-    padding-left: 0 !important;
-  }
+  /* Override ml/mr utility classes for RTL layout */
+  .ml-1 { margin-right: 0.25rem !important; margin-left: 0 !important; }
+  .ml-2 { margin-right: 0.5rem !important; margin-left: 0 !important; }
+  .ml-3 { margin-right: 0.75rem !important; margin-left: 0 !important; }
+  .ml-4 { margin-right: 1rem !important; margin-left: 0 !important; }
+  
+  .mr-1 { margin-left: 0.25rem !important; margin-right: 0 !important; }
+  .mr-2 { margin-left: 0.5rem !important; margin-right: 0 !important; }
+  .mr-3 { margin-left: 0.75rem !important; margin-right: 0 !important; }
+  .mr-4 { margin-left: 1rem !important; margin-right: 0 !important; }
+  
+  /* Override pl/pr utility classes for RTL layout */
+  .pl-2 { padding-right: 0.5rem !important; padding-left: 0 !important; }
+  .pl-3 { padding-right: 0.75rem !important; padding-left: 0 !important; }
+  .pl-4 { padding-right: 1rem !important; padding-left: 0 !important; }
+  .pl-10 { padding-right: 2.5rem !important; padding-left: 0 !important; }
+  
+  .pr-2 { padding-left: 0.5rem !important; padding-right: 0 !important; }
+  .pr-3 { padding-left: 0.75rem !important; padding-right: 0 !important; }
+  .pr-4 { padding-left: 1rem !important; padding-right: 0 !important; }
+  .pr-10 { padding-left: 2.5rem !important; padding-right: 0 !important; }
 
   /* Fix dropdown positioning for RTL */
   .dropdown-menu {
     right: 0;
     left: auto;
   }
+  
+  /* Make Tailwind's space-x behave correctly in RTL */
+  .space-x-1 > * + * { margin-right: 0.25rem; margin-left: 0; }
+  .space-x-2 > * + * { margin-right: 0.5rem; margin-left: 0; }
+  .space-x-3 > * + * { margin-right: 0.75rem; margin-left: 0; }
+  .space-x-4 > * + * { margin-right: 1rem; margin-left: 0; }
+  
+  /* And ensure space-x-reverse works correctly too */
+  .space-x-reverse > * + * { margin-left: 0.25rem; margin-right: 0; }
+  .space-x-2-reverse > * + * { margin-left: 0.5rem; margin-right: 0; }
+  .space-x-3-reverse > * + * { margin-left: 0.75rem; margin-right: 0; }
+  .space-x-4-reverse > * + * { margin-left: 1rem; margin-right: 0; }
 }

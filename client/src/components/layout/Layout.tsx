@@ -31,7 +31,10 @@ export function Layout({ children, title }: LayoutProps) {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-screen">
-        <div className="text-lg">{t('common.loading')}</div>
+        <div className="flex flex-col items-center">
+          <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin mb-3"></div>
+          <div className="text-lg font-medium">{t('common.loading')}</div>
+        </div>
       </div>
     );
   }
@@ -41,22 +44,32 @@ export function Layout({ children, title }: LayoutProps) {
   };
 
   return (
-    <div className="flex h-screen overflow-hidden">
+    <div className="flex h-screen overflow-hidden bg-gray-50">
       {/* Sidebar - hidden on mobile */}
       <Sidebar className="hidden md:flex" />
       
-      {/* Mobile Sidebar - conditionally shown */}
+      {/* Mobile Sidebar - conditionally shown with overlay */}
       {isMobileSidebarOpen && (
         <div className="fixed inset-0 z-50 md:hidden">
-          <div className="absolute inset-0 bg-black/50" onClick={toggleMobileSidebar}></div>
-          <Sidebar className="absolute w-64 h-full" />
+          <div 
+            className="absolute inset-0 bg-black/50 transition-opacity" 
+            onClick={toggleMobileSidebar}
+            aria-hidden="true"
+          ></div>
+          <div className="absolute top-0 right-0 h-full w-64 transition-transform">
+            <Sidebar className="shadow-xl" />
+          </div>
         </div>
       )}
       
       {/* Main content */}
-      <main className="flex-1 overflow-y-auto pb-16 md:pb-0">
+      <main className="flex-1 flex flex-col overflow-hidden">
         <Header title={title} onToggleSidebar={toggleMobileSidebar} />
-        {children}
+        
+        {/* Scrollable content area */}
+        <div className="flex-1 overflow-y-auto pb-16 md:pb-0">
+          {children}
+        </div>
       </main>
       
       {/* Mobile navigation bar */}
