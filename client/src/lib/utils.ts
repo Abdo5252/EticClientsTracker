@@ -52,9 +52,9 @@ export function getRelativeTime(date: string | Date): string {
 
 export function getInvoiceStatusText(status: string): string {
   const statusMap: Record<string, string> = {
-    'open': 'مستحق',
-    'partial': 'مدفوع جزئياً',
-    'paid': 'مدفوع بالكامل'
+    'open': t('invoices.invoiceStatus.open'),
+    'partial': t('invoices.invoiceStatus.partial'),
+    'paid': t('invoices.invoiceStatus.paid')
   };
   return statusMap[status] || status;
 }

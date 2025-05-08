@@ -7,10 +7,15 @@ import {
   FileUp, 
   CreditCard, 
   MoreHorizontal,
-  BarChart3
+  BarChart3,
+  Menu
 } from 'lucide-react';
 
-export function MobileNavigation() {
+interface MobileNavigationProps {
+  onToggleSidebar?: () => void;
+}
+
+export function MobileNavigation({ onToggleSidebar }: MobileNavigationProps) {
   const [location] = useLocation();
   
   const navItems = [
@@ -24,6 +29,19 @@ export function MobileNavigation() {
   return (
     <div className="md:hidden fixed bottom-0 right-0 left-0 bg-blue-900 z-50 shadow-lg border-t border-blue-800">
       <div className="flex justify-around py-2">
+        {/* Sidebar toggle button */}
+        <button
+          onClick={onToggleSidebar}
+          className="flex flex-col items-center justify-center px-3 py-2 rounded-lg text-blue-200 hover:text-white hover:bg-blue-800 transition-colors"
+          aria-label="Toggle sidebar"
+        >
+          <div className="mb-1">
+            <Menu className="h-5 w-5" />
+          </div>
+          <span className="text-xs font-medium">{t('navigation.menu')}</span>
+        </button>
+        
+        {/* Navigation links */}
         {navItems.map((item) => (
           <a 
             key={item.path} 

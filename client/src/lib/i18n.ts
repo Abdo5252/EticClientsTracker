@@ -35,7 +35,8 @@ export const translations = {
     reports: 'التقارير',
     clientUpload: 'رفع بيانات العملاء',
     settings: 'الإعدادات',
-    more: 'المزيد'
+    more: 'المزيد',
+    menu: 'القائمة'
   },
   login: {
     title: 'تسجيل الدخول',
@@ -118,7 +119,7 @@ export const translations = {
     totalAmount: 'إجمالي المبلغ',
     paidAmount: 'المبلغ المدفوع',
     remainingAmount: 'المبلغ المتبقي',
-    status: {
+    invoiceStatus: {
       open: 'مستحق',
       partial: 'مدفوع جزئياً',
       paid: 'مدفوع بالكامل'
