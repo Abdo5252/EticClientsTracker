@@ -43,9 +43,9 @@ export function MonthlyReport({ onBack }: MonthlyReportProps) {
             variant="ghost" 
             size="sm" 
             onClick={onBack}
-            className="ml-2"
+            className="ml-2 hover:bg-gray-100 text-gray-700 hover:text-blue-700"
           >
-            <i className="ri-arrow-right-line"></i>
+            <i className="ri-arrow-right-line text-lg"></i>
           </Button>
           <h2 className="text-xl font-bold">{t('reports.monthlyReport.title')}</h2>
         </div>
@@ -54,18 +54,18 @@ export function MonthlyReport({ onBack }: MonthlyReportProps) {
           <div className="flex space-x-2 space-x-reverse">
             <Button 
               variant="outline" 
-              className="inline-flex items-center"
+              className="inline-flex items-center gap-2 border-gray-400 hover:bg-red-50 hover:text-red-700 hover:border-red-300"
               onClick={handleExportPDF}
             >
-              <i className="ri-file-pdf-line ml-1"></i>
+              <i className="ri-file-pdf-line text-red-600"></i>
               <span>{t('reports.exportPDF')}</span>
             </Button>
             <Button 
               variant="outline" 
-              className="inline-flex items-center"
+              className="inline-flex items-center gap-2 border-gray-400 hover:bg-green-50 hover:text-green-700 hover:border-green-300"
               onClick={handleExportExcel}
             >
-              <i className="ri-file-excel-line ml-1"></i>
+              <i className="ri-file-excel-line text-green-600"></i>
               <span>{t('reports.exportExcel')}</span>
             </Button>
           </div>
@@ -102,8 +102,19 @@ export function MonthlyReport({ onBack }: MonthlyReportProps) {
             <Button 
               onClick={handleGenerateReport}
               disabled={isGenerating}
+              className="bg-blue-700 hover:bg-blue-800 text-white font-medium px-4 py-2"
             >
-              {isGenerating || isLoadingReport ? t('common.loading') : t('reports.createReport')}
+              {isGenerating || isLoadingReport ? (
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  <span>{t('common.loading')}</span>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <i className="ri-file-chart-2-line"></i>
+                  <span>{t('reports.generateReport')}</span>
+                </div>
+              )}
             </Button>
           </div>
         </div>

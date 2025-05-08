@@ -161,6 +161,7 @@ export const translations = {
   },
   reports: {
     title: 'التقارير',
+    subtitle: 'اختر نوع التقرير المطلوب من الأنواع التالية',
     clientReport: {
       title: 'تقرير العميل',
       description: 'عرض تفاصيل الفواتير، الدفعات، والرصيد لعميل محدد'
@@ -174,6 +175,7 @@ export const translations = {
       description: 'عرض المبالغ المستحقة مصنفة حسب فترات التأخير'
     },
     createReport: 'إنشاء التقرير',
+    generateReport: 'إنشاء التقرير',
     exportPDF: 'تصدير PDF',
     exportExcel: 'تصدير Excel',
     client: 'العميل',
@@ -195,7 +197,22 @@ export const translations = {
     status: 'الحالة',
     paymentMethod: 'طريقة الدفع',
     checkTransNumber: 'رقم الشيك/التحويل',
-    notes: 'ملاحظات'
+    notes: 'ملاحظات',
+    aging: {
+      lessThan30: 'أقل من 30 يوم',
+      between30And60: '30 - 60 يوم',
+      between60And90: '60 - 90 يوم',
+      moreThan90: 'أكثر من 90 يوم',
+      total: 'الإجمالي'
+    },
+    periods: {
+      current: 'الشهر الحالي',
+      previous: 'الشهر السابق',
+      year: 'السنة الحالية'
+    },
+    noReportData: 'لا توجد بيانات للتقرير المطلوب',
+    filterOptions: 'خيارات التصفية',
+    applyFilter: 'تطبيق التصفية'
   },
   clientUpload: {
     title: 'رفع بيانات العملاء',
