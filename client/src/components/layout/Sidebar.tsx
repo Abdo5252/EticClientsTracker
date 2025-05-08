@@ -1,7 +1,17 @@
-import { Link, useLocation } from 'wouter';
+import { useLocation } from 'wouter';
 import { cn } from '@/lib/utils';
 import { t } from '@/lib/i18n';
 import { useAuth } from '@/hooks/use-auth';
+import { 
+  LayoutDashboard, 
+  Users, 
+  FileUp, 
+  CreditCard, 
+  BarChart3, 
+  FileSpreadsheet, 
+  Settings, 
+  LogOut
+} from 'lucide-react';
 
 interface SidebarProps {
   className?: string;
@@ -11,39 +21,42 @@ export function Sidebar({ className }: SidebarProps) {
   const [location] = useLocation();
   const { user, logout } = useAuth();
   
-  // Navigation items
+  // Navigation items with Lucide React icons
   const navItems = [
-    { path: '/', label: t('navigation.dashboard'), icon: 'ri-dashboard-line' },
-    { path: '/clients', label: t('navigation.clients'), icon: 'ri-user-line' },
-    { path: '/invoices', label: t('navigation.invoices'), icon: 'ri-file-upload-line' },
-    { path: '/payments', label: t('navigation.payments'), icon: 'ri-money-dollar-circle-line' },
-    { path: '/reports', label: t('navigation.reports'), icon: 'ri-file-chart-line' },
-    { path: '/client-upload', label: t('navigation.clientUpload'), icon: 'ri-file-excel-line' },
-    { path: '/settings', label: t('navigation.settings'), icon: 'ri-settings-line' }
+    { path: '/', label: t('navigation.dashboard'), icon: <LayoutDashboard className="h-5 w-5" /> },
+    { path: '/clients', label: t('navigation.clients'), icon: <Users className="h-5 w-5" /> },
+    { path: '/invoices', label: t('navigation.invoices'), icon: <FileUp className="h-5 w-5" /> },
+    { path: '/payments', label: t('navigation.payments'), icon: <CreditCard className="h-5 w-5" /> },
+    { path: '/reports', label: t('navigation.reports'), icon: <BarChart3 className="h-5 w-5" /> },
+    { path: '/client-upload', label: t('navigation.clientUpload'), icon: <FileSpreadsheet className="h-5 w-5" /> },
+    { path: '/settings', label: t('navigation.settings'), icon: <Settings className="h-5 w-5" /> }
   ];
   
   return (
-    <aside className={cn("bg-primary-800 text-white w-64 flex-shrink-0 hidden md:flex md:flex-col h-screen", className)}>
+    <aside className={cn("bg-primary-800 text-white w-64 flex-shrink-0 flex flex-col h-screen border-l border-primary-700", className)}>
       <div className="p-4 border-b border-primary-700">
         <h2 className="text-xl font-bold">{t('common.appName')}</h2>
         <p className="text-sm text-primary-200">{t('common.appDescription')}</p>
       </div>
       
-      <nav className="mt-6 px-2 flex-grow overflow-y-auto">
+      <nav className="mt-4 px-2 flex-grow overflow-y-auto">
         <ul className="space-y-1">
           {navItems.map((item) => (
             <li key={item.path}>
-              <Link href={item.path}>
-                <a className={cn(
-                  "flex items-center px-4 py-3 rounded-lg",
+              <a 
+                href={item.path}
+                className={cn(
+                  "flex items-center px-4 py-3 rounded-lg transition-colors",
                   location === item.path 
-                    ? "bg-primary-700" 
-                    : "hover:bg-primary-700"
-                )}>
-                  <i className={cn(item.icon, "ml-3 text-xl")}></i>
-                  <span>{item.label}</span>
-                </a>
-              </Link>
+                    ? "bg-primary-700 text-white" 
+                    : "text-primary-100 hover:bg-primary-700 hover:text-white"
+                )}
+              >
+                <span className="ml-3 flex items-center justify-center">
+                  {item.icon}
+                </span>
+                <span>{item.label}</span>
+              </a>
             </li>
           ))}
         </ul>
@@ -64,9 +77,9 @@ export function Sidebar({ className }: SidebarProps) {
           </div>
           <button 
             onClick={logout}
-            className="mt-3 w-full flex items-center justify-center py-2 px-4 rounded-lg border border-primary-600 text-primary-200 hover:bg-primary-700"
+            className="mt-3 w-full flex items-center justify-center py-2 px-4 rounded-lg border border-primary-600 text-primary-200 hover:bg-primary-700 transition-colors"
           >
-            <i className="ri-logout-box-line ml-2"></i>
+            <LogOut className="h-4 w-4 ml-2" />
             <span>{t('common.logout')}</span>
           </button>
         </div>
