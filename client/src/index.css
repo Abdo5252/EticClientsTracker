@@ -1,0 +1,87 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 0 0% 100%;
+  --foreground: 20 14.3% 4.1%;
+  --muted: 60 4.8% 95.9%;
+  --muted-foreground: 25 5.3% 44.7%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 20 14.3% 4.1%;
+  --card: 0 0% 100%;
+  --card-foreground: 20 14.3% 4.1%;
+  --border: 20 5.9% 90%;
+  --input: 20 5.9% 90%;
+  --primary: 221 83% 41%;
+  --primary-foreground: 211 100% 99%;
+  --secondary: 199 89% 48%;
+  --secondary-foreground: 211 100% 99%;
+  --accent: 43 96% 51%;
+  --accent-foreground: 24 9.8% 10%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 60 9.1% 97.8%;
+  --ring: 20 14.3% 4.1%;
+  --radius: 0.5rem;
+  --chart-1: 221 83% 41%;
+  --chart-2: 199 89% 48%;
+  --chart-3: 43 96% 51%;
+  --chart-4: 142 69% 45%;
+  --chart-5: 0 84.2% 60.2%;
+  --sidebar-background: 221 83% 41%;
+  --sidebar-foreground: 0 0% 98%;
+  --sidebar-primary: 223 100% 60%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 220 14% 75%;
+  --sidebar-accent-foreground: 220 20% 98%;
+  --sidebar-border: 223 70% 36%;
+  --sidebar-ring: 220 20% 98%;
+}
+
+.dark {
+  --background: 240 10% 3.9%;
+  --foreground: 0 0% 98%;
+  --muted: 240 3.7% 15.9%;
+  --muted-foreground: 240 5% 64.9%;
+  --popover: 240 10% 3.9%;
+  --popover-foreground: 0 0% 98%;
+  --card: 240 10% 3.9%;
+  --card-foreground: 0 0% 98%;
+  --border: 240 3.7% 15.9%;
+  --input: 240 3.7% 15.9%;
+  --primary: 221 83% 41%;
+  --primary-foreground: 211 100% 99%;
+  --secondary: 199 89% 48%;
+  --secondary-foreground: 211 100% 99%;
+  --accent: 43 96% 51%;
+  --accent-foreground: 24 9.8% 10%;
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 0 0% 98%;
+  --ring: 240 4.9% 83.9%;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-gray-50 text-gray-800;
+    font-family: 'Cairo', sans-serif;
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: hsl(var(--primary));
+    box-shadow: 0 0 0 2px rgba(30, 64, 175, 0.2);
+  }
+}
