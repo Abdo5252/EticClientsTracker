@@ -33,10 +33,10 @@ export function Sidebar({ className }: SidebarProps) {
   ];
   
   return (
-    <aside className={cn("bg-primary-800 text-white w-64 flex-shrink-0 flex flex-col h-screen border-l border-primary-700", className)}>
-      <div className="p-4 border-b border-primary-700">
-        <h2 className="text-xl font-bold">{t('common.appName')}</h2>
-        <p className="text-sm text-primary-200">{t('common.appDescription')}</p>
+    <aside className={cn("bg-blue-900 text-white w-64 flex-shrink-0 flex flex-col h-screen border-l border-blue-800", className)}>
+      <div className="p-4 border-b border-blue-800">
+        <h2 className="text-xl font-bold text-white">{t('common.appName')}</h2>
+        <p className="text-sm text-blue-200">{t('common.appDescription')}</p>
       </div>
       
       <nav className="mt-4 px-2 flex-grow overflow-y-auto">
@@ -48,14 +48,14 @@ export function Sidebar({ className }: SidebarProps) {
                 className={cn(
                   "flex items-center px-4 py-3 rounded-lg transition-colors",
                   location === item.path 
-                    ? "bg-primary-700 text-white" 
-                    : "text-primary-100 hover:bg-primary-700 hover:text-white"
+                    ? "bg-blue-800 text-white" 
+                    : "text-blue-100 hover:bg-blue-800 hover:text-white"
                 )}
               >
-                <span className="ml-3 flex items-center justify-center">
+                <span className="ml-3 flex items-center justify-center text-white">
                   {item.icon}
                 </span>
-                <span>{item.label}</span>
+                <span className="font-medium">{item.label}</span>
               </a>
             </li>
           ))}
@@ -63,21 +63,21 @@ export function Sidebar({ className }: SidebarProps) {
       </nav>
       
       {user && (
-        <div className="p-4 border-t border-primary-700">
+        <div className="p-4 border-t border-blue-800">
           <div className="flex items-center">
-            <div className="w-10 h-10 rounded-full bg-primary-600 flex items-center justify-center ml-3">
+            <div className="w-10 h-10 rounded-full bg-blue-700 flex items-center justify-center ml-3 text-white">
               <span className="text-lg font-semibold">
                 {user.displayName && user.displayName.charAt(0)}
               </span>
             </div>
             <div>
-              <h4 className="font-medium">{user.displayName}</h4>
-              <p className="text-xs text-primary-200">{user.role === 'admin' ? 'مدير النظام' : 'مستخدم'}</p>
+              <h4 className="font-medium text-white">{user.displayName}</h4>
+              <p className="text-xs text-blue-200">{user.role === 'admin' ? 'مدير النظام' : 'مستخدم'}</p>
             </div>
           </div>
           <button 
             onClick={logout}
-            className="mt-3 w-full flex items-center justify-center py-2 px-4 rounded-lg border border-primary-600 text-primary-200 hover:bg-primary-700 transition-colors"
+            className="mt-3 w-full flex items-center justify-center py-2 px-4 rounded-lg border border-blue-700 bg-blue-800 text-white hover:bg-blue-700 transition-colors"
           >
             <LogOut className="h-4 w-4 ml-2" />
             <span>{t('common.logout')}</span>

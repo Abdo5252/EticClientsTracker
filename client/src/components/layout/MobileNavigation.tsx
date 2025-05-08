@@ -22,7 +22,7 @@ export function MobileNavigation() {
   ];
   
   return (
-    <div className="md:hidden fixed bottom-0 right-0 left-0 bg-primary-800 z-50 shadow-lg border-t border-primary-700">
+    <div className="md:hidden fixed bottom-0 right-0 left-0 bg-blue-900 z-50 shadow-lg border-t border-blue-800">
       <div className="flex justify-around py-2">
         {navItems.map((item) => (
           <a 
@@ -31,8 +31,8 @@ export function MobileNavigation() {
             className={cn(
               "flex flex-col items-center justify-center px-3 py-2 rounded-lg transition-colors",
               location === item.path 
-                ? "text-white" 
-                : "text-primary-200 hover:text-white"
+                ? "text-white bg-blue-800" 
+                : "text-blue-200 hover:text-white hover:bg-blue-800"
             )}
           >
             <div className="mb-1">{item.icon}</div>
