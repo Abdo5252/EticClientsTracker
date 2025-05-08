@@ -50,9 +50,9 @@ export function ClientReport({ onBack }: ClientReportProps) {
             variant="ghost" 
             size="sm" 
             onClick={onBack}
-            className="ml-2"
+            className="ml-2 hover:bg-gray-100 text-gray-700 hover:text-blue-700"
           >
-            <i className="ri-arrow-right-line"></i>
+            <i className="ri-arrow-right-line text-lg"></i>
           </Button>
           <h2 className="text-xl font-bold">{t('reports.clientReport.title')}</h2>
         </div>
@@ -61,18 +61,18 @@ export function ClientReport({ onBack }: ClientReportProps) {
           <div className="flex space-x-2 space-x-reverse">
             <Button 
               variant="outline" 
-              className="inline-flex items-center"
+              className="inline-flex items-center gap-2 border-gray-400 hover:bg-red-50 hover:text-red-700 hover:border-red-300"
               onClick={handleExportPDF}
             >
-              <i className="ri-file-pdf-line ml-1"></i>
+              <i className="ri-file-pdf-line text-red-600"></i>
               <span>{t('reports.exportPDF')}</span>
             </Button>
             <Button 
               variant="outline" 
-              className="inline-flex items-center"
+              className="inline-flex items-center gap-2 border-gray-400 hover:bg-green-50 hover:text-green-700 hover:border-green-300"
               onClick={handleExportExcel}
             >
-              <i className="ri-file-excel-line ml-1"></i>
+              <i className="ri-file-excel-line text-green-600"></i>
               <span>{t('reports.exportExcel')}</span>
             </Button>
           </div>
@@ -217,19 +217,19 @@ export function ClientReport({ onBack }: ClientReportProps) {
                   {reportData.invoices.length > 0 ? (
                     reportData.invoices.map((invoice: any) => (
                       <tr key={invoice.id}>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900">
                           {invoice.invoiceNumber}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
                           {formatDate(invoice.invoiceDate)}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-blue-700 font-semibold">
                           {invoice.totalAmount.toLocaleString('ar-EG')}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-green-700 font-semibold">
                           {invoice.paidAmount.toLocaleString('ar-EG')}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-semibold">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-red-700 font-bold">
                           {(invoice.totalAmount - invoice.paidAmount).toLocaleString('ar-EG')}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
@@ -278,19 +278,19 @@ export function ClientReport({ onBack }: ClientReportProps) {
                   {reportData.payments.length > 0 ? (
                     reportData.payments.map((payment: any) => (
                       <tr key={payment.id}>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
                           {formatDate(payment.paymentDate)}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-semibold">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-green-700 font-bold">
                           {payment.amount.toLocaleString('ar-EG')}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-blue-700 font-medium">
                           {getPaymentMethodText(payment.paymentMethod)}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
                           {payment.checkNumber || payment.transactionId || '-'}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
                           {payment.notes || '-'}
                         </td>
                       </tr>

@@ -35,23 +35,24 @@ export function ReportCard({ title, description, icon, color, onClick }: ReportC
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
-      <div className={cn("h-12 w-12 rounded-full flex items-center justify-center mb-4", colorClasses[color].bg)}>
-        <i className={cn(icon, "text-xl", colorClasses[color].icon)}></i>
+    <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200 hover:shadow-md transition-shadow duration-200">
+      <div className={cn("h-16 w-16 rounded-full flex items-center justify-center mb-5", colorClasses[color].bg)}>
+        <i className={cn(icon, "text-2xl", colorClasses[color].icon)}></i>
       </div>
-      <h3 className="text-lg font-bold text-gray-900 mb-2">{title}</h3>
-      <p className="text-sm text-gray-800 mb-4">{description}</p>
+      <h3 className="text-lg font-bold text-gray-900 mb-3">{title}</h3>
+      <p className="text-sm text-gray-800 mb-5 line-clamp-2">{description}</p>
       <Button 
         onClick={onClick}
         className={cn(
-          "w-full px-4 py-2 text-white rounded-lg font-medium",
+          "w-full px-4 py-2.5 text-white rounded-lg font-medium text-sm flex items-center justify-center gap-2",
           color === 'primary' && "bg-blue-700 hover:bg-blue-800",
           color === 'secondary' && "bg-indigo-700 hover:bg-indigo-800",
           color === 'warning' && "bg-amber-700 hover:bg-amber-800",
           color === 'success' && "bg-green-700 hover:bg-green-800"
         )}
       >
-        {t('reports.createReport')}
+        <i className="ri-file-chart-line"></i>
+        <span>{t('reports.createReport')}</span>
       </Button>
     </div>
   );
