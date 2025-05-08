@@ -7,6 +7,7 @@ import {
   settings, type Setting, type InsertSetting,
   type ClientWithBalance
 } from "@shared/schema";
+import * as bcrypt from "bcrypt";
 
 // Storage interface
 export interface IStorage {
@@ -89,7 +90,7 @@ export class MemStorage implements IStorage {
     this.currentActivityId = 1;
     this.currentSettingId = 1;
     
-    // Initialize with a default admin user
+    // Initialize with a default admin user (admin/admin)
     this.createUser({
       username: 'admin',
       password: '$2a$10$VCJVrsLvhEf5U4ozELg8HuWf7/WEwHZK734QFRnYVoR8Jl8uEJnhW', // 'admin'
@@ -97,13 +98,8 @@ export class MemStorage implements IStorage {
       role: 'admin'
     });
     
-    // Add a test user with plain text password
-    this.createUser({
-      username: 'test',
-      password: '$2a$10$jRf5a./1IVwj8Qmkk9JCr.TUH0xNELJQTr2IQCwIQiXkPJ6.zBXmO', // 'test'
-      displayName: 'مستخدم للاختبار',
-      role: 'user'
-    });
+    // Initialize with a plain text user (user/password)
+    this.createPlainUser();
   }
 
   // User operations
@@ -121,6 +117,24 @@ export class MemStorage implements IStorage {
     const id = this.currentUserId++;
     const user: User = { ...insertUser, id };
     this.users.set(id, user);
+    return user;
+  }
+  
+  // Helper to create a test user with plaintext password for debugging
+  private async createPlainUser() {
+    // Hash the plaintext password "password"
+    const hashedPassword = await bcrypt.hash('password', 10);
+    const id = this.currentUserId++;
+    const user: User = {
+      id,
+      username: 'user',
+      password: hashedPassword,
+      displayName: 'Test User',
+      role: 'user'
+    };
+    
+    this.users.set(id, user);
+    console.log(`Created test user: user/password`);
     return user;
   }
 
