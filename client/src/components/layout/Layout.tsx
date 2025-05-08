@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Sidebar } from './Sidebar';
 import { Header } from './Header';
 import { MobileNavigation } from './MobileNavigation';
@@ -17,8 +17,13 @@ export function Layout({ children, title }: LayoutProps) {
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   // Redirect to login if not authenticated
+  useEffect(() => {
+    if (!loading && !isAuthenticated && location !== '/login') {
+      setLocation('/login');
+    }
+  }, [loading, isAuthenticated, location, setLocation]);
+
   if (!loading && !isAuthenticated && location !== '/login') {
-    setLocation('/login');
     return null;
   }
 

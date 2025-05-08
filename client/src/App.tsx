@@ -1,4 +1,5 @@
 import { Switch, Route, useLocation } from "wouter";
+import { useEffect } from "react";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -17,13 +18,18 @@ import Settings from "@/pages/settings";
 function ProtectedRoute({ component: Component, ...rest }: any) {
   const { isAuthenticated, loading } = useAuth();
   const [location, setLocation] = useLocation();
+  
+  useEffect(() => {
+    if (!loading && !isAuthenticated) {
+      setLocation("/login");
+    }
+  }, [loading, isAuthenticated, setLocation]);
 
   if (loading) {
     return <div className="flex justify-center items-center h-screen">جاري التحميل...</div>;
   }
 
   if (!isAuthenticated) {
-    setLocation("/login");
     return null;
   }
 
