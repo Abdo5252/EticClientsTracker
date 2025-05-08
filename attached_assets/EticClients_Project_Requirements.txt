@@ -1,0 +1,176 @@
+Project Requirements Document: EticClients
+
+Project Overview
+•  Project Name: EticClients
+•  Objective: Develop a simple and efficient web-based system to manage client accounts, replacing a complex existing system. The system will track invoices and payments daily, generate detailed reports, and provide an easy-to-use interface. The website will be exclusively in Arabic.
+•  Target Platform: Replit
+•  Language: Arabic only
+•  Currency Support: Egyptian Pound (EGP), US Dollar (USD), Euro (EUR)
+
+System Requirements
+1. Client Data Management
+•  Initial Data Source: An Excel file containing:
+​   •  Client Code (unique identifier).
+​   •  Client Name.
+​   •  Sales Representative Name.
+•  Process:
+​   •  The Excel file will be uploaded once to populate the internal database.
+​   •  No further use of the Excel file; all future updates (add, edit, delete) will be handled within the system.
+•  Features:
+​   •  Search clients by name or code.
+​   •  Display current client balance.
+
+2. Invoice Management
+•  Input Method: Daily upload of an Excel sheet containing the previous day’s invoices.
+•  System Functionality:
+​   •  The system will read the Excel file and automatically assign invoices to clients based on client code or name.
+•  Invoice Details:
+​   •  Invoice Number.
+​   •  Invoice Date.
+​   •  Total Amount (no product details required).
+​   •  Supported Currencies: EGP, USD, EUR.
+•  Output: Invoices are linked to the respective client accounts.
+
+3. Payment Management
+•  Input Method: Manual entry via the system.
+•  Payment Details:
+​   •  Client Code or Name.
+​   •  Amount.
+​   •  Payment Date.
+​   •  Payment Method (Cash, Transfer, Check, etc.).
+​   •  Check Number (if applicable).
+•  Process: Payments are deducted automatically from the oldest outstanding balance.
+
+4. Reporting System
+•  Client-Specific Report:
+​   •  List of invoices (Invoice Number + Total Amount).
+​   •  List of payments (Date, Amount, Payment Method).
+​   •  Total Sales.
+​   •  Total Payments.
+​   •  Remaining Balance.
+​   •  Option to filter by a specific period (e.g., a month).
+•  General Reports:
+​   •  Monthly report for all clients (Total Invoices, Total Payments, Balances).
+​   •  Aging Report (Outstanding amounts categorized by month, e.g., January, February, etc.).
+​   •  Automatic adjustment of aging report upon adding a payment or invoice.
+•  Export Options: Reports can be exported as PDF or Excel files.
+
+5. Dashboard
+•  Overview:
+​   •  Total Sales for the Day.
+​   •  Total Payments Received.
+​   •  Number of Overdue Clients.
+​   •  Quick Notifications (Alerts).
+•  Purpose: Provide a real-time snapshot of business activities.
+
+6. User Interface and Search Functionality
+•  Search Capabilities:
+​   •  Search by client name, code, date, or payment method across all pages.
+•  Filtering Options:
+​   •  Filter by date, client, or payment method.
+•  Design:
+​   •  Simple and fast interface for ease of use.
+
+7. Additional Features
+•  Automated Email Reports:
+​   •  Send reports to clients, sales representatives, or managers.
+​   •  Customizable settings:
+​​     •  Recipient email (client, sales rep, or manager).
+​​     •  Schedule (monthly or weekly).
+​​     •  Report content (sales, payments, balance).
+•  Internal Notification System:
+​   •  Alerts for:
+​​     •  New invoice addition.
+​​     •  New payment received.
+​​     •  Overdue client payments.
+•  Login Page:
+​   •  Username and password login only (no account creation allowed).
+​   •  Secure session management.
+
+8. Main Pages of the System
+1.  Login Page
+​   •  Login with username and password.
+​   •  Redirects to the Dashboard upon successful login.
+2.  Dashboard
+​   •  Displays daily sales, payments, overdue clients, and notifications.
+3.  Clients Management Page
+​   •  Search by name or code.
+​   •  Display current balance.
+​   •  Link to client details.
+4.  Invoice Upload Page
+​   •  Upload daily Excel file for invoices.
+​   •  Show upload status (Success/Failure/Modified).
+5.  Add Payment Page
+​   •  Form to enter payment details.
+6.  Reports Page
+​   •  Generate client-specific or monthly reports.
+​   •  Generate aging reports.
+​   •  Export as PDF or Excel.
+7.  Settings Page
+​   •  Configure automated email settings.
+​   •  Manage notification preferences.
+8.  Initial Client Data Upload Page
+​   •  One-time upload of the client Excel file.
+
+Technical Requirements
+1. Frontend (User Interface)
+•  Technologies:
+​   •  HTML, CSS, JavaScript.
+​   •  Framework: React.js or Vue.js (for dynamic pages).
+​   •  Design Libraries: Bootstrap or Tailwind CSS.
+​   •  API Integration: Axios.
+•  Purpose: Build an interactive and responsive Arabic interface.
+
+2. Backend (Server-Side)
+•  Technologies:
+​   •  Node.js with Express.js or Python with Flask.
+•  Responsibilities:
+​   •  Process Excel file uploads.
+​   •  Manage data storage and retrieval.
+​   •  Generate PDF/Excel reports.
+​   •  Handle automated email sending.
+​   •  Manage login sessions.
+
+3. Database
+•  Options:
+​   •  MongoDB (for flexibility).
+​   •  MySQL or PostgreSQL (for relational data structure).
+•  Data:
+​   •  Clients, Invoices, Payments, and Report History.
+
+4. Excel Processing
+•  Tools:
+​   •  SheetJS or xlsx library.
+•  Functionality: Read and parse uploaded Excel files.
+
+5. Email Automation
+•  Tool: Nodemailer (with Gmail or SMTP).
+•  Scheduling: Cron jobs for automated sending.
+
+6. Report Generation
+•  PDF: pdfkit or Puppeteer.
+•  Excel: exceljs.
+
+7. Notifications
+•  Options:
+​   •  Socket.io (for real-time alerts).
+​   •  Database-based alerts displayed on login.
+
+8. Security
+•  Tools:
+​   •  JWT (for session security).
+​   •  BCrypt (for password encryption).
+
+9. Hosting
+•  Frontend: Vercel or Netlify.
+•  Backend + Database: Render, Railway, Firebase Functions, or DigitalOcean VPS.
+
+Implementation Notes
+•  The system will be developed on Replit, integrating all the above tools and technologies.
+•  All currency conversions (EGP, USD, EUR) will be handled manually by the user during data entry, with clear labeling in the interface.
+•  The Arabic language will be fully supported in the UI, including right-to-left (RTL) text direction.
+
+Next Steps
+•  Validation: Confirm with the client that all requirements are captured.
+•  Development Plan: Start with database design, followed by page layouts, and then integration of features.
+•  Testing: Ensure functionality across all pages and features before deployment
