@@ -96,6 +96,14 @@ export class MemStorage implements IStorage {
       displayName: 'مدير النظام',
       role: 'admin'
     });
+    
+    // Add a test user with plain text password
+    this.createUser({
+      username: 'test',
+      password: '$2a$10$jRf5a./1IVwj8Qmkk9JCr.TUH0xNELJQTr2IQCwIQiXkPJ6.zBXmO', // 'test'
+      displayName: 'مستخدم للاختبار',
+      role: 'user'
+    });
   }
 
   // User operations
