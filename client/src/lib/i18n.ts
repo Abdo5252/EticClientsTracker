@@ -27,6 +27,12 @@ export const translations = {
       EUR: 'يورو'
     }
   },
+  users: {
+    roles: {
+      admin: 'مدير النظام',
+      user: 'مستخدم'
+    }
+  },
   navigation: {
     dashboard: 'لوحة التحكم',
     clients: 'إدارة العملاء',
@@ -36,7 +42,9 @@ export const translations = {
     clientUpload: 'رفع بيانات العملاء',
     settings: 'الإعدادات',
     more: 'المزيد',
-    menu: 'القائمة'
+    menu: 'القائمة',
+    openSidebar: 'فتح القائمة الجانبية',
+    closeSidebar: 'إغلاق القائمة الجانبية'
   },
   login: {
     title: 'تسجيل الدخول',
