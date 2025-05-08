@@ -10,27 +10,27 @@ export function AlertItem({ type, title, description }: AlertItemProps) {
   const typeConfig = {
     error: {
       icon: 'ri-error-warning-line',
-      bg: 'bg-red-50',
-      border: 'border-error',
-      textTitle: 'text-error',
+      bg: 'bg-red-100',
+      border: 'border-red-600',
+      textTitle: 'text-red-800',
     },
     warning: {
       icon: 'ri-alert-line',
-      bg: 'bg-yellow-50',
-      border: 'border-warning',
-      textTitle: 'text-warning',
+      bg: 'bg-yellow-100',
+      border: 'border-yellow-600',
+      textTitle: 'text-yellow-800',
     },
     info: {
       icon: 'ri-information-line',
-      bg: 'bg-blue-50',
-      border: 'border-primary',
-      textTitle: 'text-primary',
+      bg: 'bg-blue-100',
+      border: 'border-blue-600',
+      textTitle: 'text-blue-800',
     },
     success: {
       icon: 'ri-checkbox-circle-line',
-      bg: 'bg-green-50',
-      border: 'border-success',
-      textTitle: 'text-success',
+      bg: 'bg-green-100',
+      border: 'border-green-600',
+      textTitle: 'text-green-800',
     }
   };
 
@@ -44,7 +44,7 @@ export function AlertItem({ type, title, description }: AlertItemProps) {
         </div>
         <div>
           <p className={cn("text-sm font-medium", config.textTitle)}>{title}</p>
-          <p className="text-xs text-gray-600">{description}</p>
+          <p className="text-xs text-gray-800">{description}</p>
         </div>
       </div>
     </div>

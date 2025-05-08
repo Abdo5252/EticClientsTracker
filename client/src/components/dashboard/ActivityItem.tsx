@@ -12,27 +12,27 @@ export function ActivityItem({ type, title, description, timestamp }: ActivityIt
   const typeConfig = {
     invoice: {
       icon: 'ri-file-add-line',
-      color: 'border-primary',
-      bgColor: 'bg-primary-50',
-      textColor: 'text-primary'
+      color: 'border-blue-600',
+      bgColor: 'bg-blue-100',
+      textColor: 'text-blue-800'
     },
     payment: {
       icon: 'ri-money-dollar-circle-line',
-      color: 'border-secondary',
-      bgColor: 'bg-secondary-light',
-      textColor: 'text-secondary'
+      color: 'border-purple-600',
+      bgColor: 'bg-purple-100',
+      textColor: 'text-purple-800'
     },
     overdue: {
       icon: 'ri-alert-line',
-      color: 'border-warning',
-      bgColor: 'bg-accent-light',
-      textColor: 'text-warning'
+      color: 'border-orange-600',
+      bgColor: 'bg-orange-100',
+      textColor: 'text-orange-800'
     },
     report: {
       icon: 'ri-mail-send-line',
-      color: 'border-success',
-      bgColor: 'bg-green-50',
-      textColor: 'text-success'
+      color: 'border-green-600',
+      bgColor: 'bg-green-100',
+      textColor: 'text-green-800'
     }
   };
 
