@@ -95,13 +95,13 @@ export function Layout({ children, title }: LayoutProps) {
         {/* Desktop Sidebar Toggle Button (fixed position) - properly positioned for RTL */}
         <button 
           onClick={toggleDesktopSidebar}
-          className={`fixed top-4 ${isDesktopSidebarOpen ? 'right-[260px]' : 'right-4'} z-50 bg-blue-50 p-2 rounded-full shadow-lg border border-blue-200 hidden md:flex items-center justify-center hover:bg-blue-100 transition-all duration-300`}
+          className={`fixed top-4 ${isDesktopSidebarOpen ? 'right-[260px]' : 'right-4'} z-50 bg-blue-600 p-2 rounded-full shadow-lg border border-blue-400 hidden md:flex items-center justify-center hover:bg-blue-700 transition-all duration-300`}
           aria-label={isDesktopSidebarOpen ? t('navigation.closeSidebar') : t('navigation.openSidebar')}
         >
           {isDesktopSidebarOpen ? (
-            <PanelLeftClose className="h-5 w-5 text-blue-700" />
+            <PanelLeftClose className="h-5 w-5 text-white" />
           ) : (
-            <PanelLeftOpen className="h-5 w-5 text-blue-700" />
+            <PanelLeftOpen className="h-5 w-5 text-white" />
           )}
         </button>
         

@@ -66,21 +66,6 @@ export function Header({
           </button>
         </div>
         
-        {/* Desktop sidebar toggle - visible only on medium and larger screens */}
-        <div className="hidden md:flex">
-          <button 
-            className="text-blue-800 hover:text-blue-900 p-2 rounded-lg bg-blue-50 hover:bg-blue-100 transition-colors" 
-            onClick={onToggleDesktopSidebar}
-            aria-label={isDesktopSidebarOpen ? "Close sidebar" : "Open sidebar"}
-          >
-            {isDesktopSidebarOpen ? (
-              <PanelLeftClose className="h-6 w-6" />
-            ) : (
-              <PanelLeftOpen className="h-6 w-6" />
-            )}
-          </button>
-        </div>
-        
         {/* Page Title */}
         <h1 className="text-xl font-bold text-gray-800 md:text-2xl flex-1 text-right md:text-center">{getTitle()}</h1>
         

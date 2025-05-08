@@ -149,26 +149,26 @@ export function ClientReport({ onBack }: ClientReportProps) {
           <div className="bg-gray-50 p-4 rounded-lg mb-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="p-4 bg-white rounded-lg border border-gray-200">
-                <h4 className="text-gray-500 text-sm mb-1">{t('reports.summary.totalSales')}</h4>
+                <h4 className="text-gray-700 text-sm mb-1 font-medium">{t('reports.summary.totalSales')}</h4>
                 <div className="font-bold text-2xl">
                   {reportData.totalSales.toLocaleString('ar-EG')} 
-                  <span className="text-sm font-normal">{t(`common.currency.${reportData.client.currency}`)}</span>
+                  <span className="text-sm font-medium">{t(`common.currency.${reportData.client.currency}`)}</span>
                 </div>
               </div>
               
               <div className="p-4 bg-white rounded-lg border border-gray-200">
-                <h4 className="text-gray-500 text-sm mb-1">{t('reports.summary.totalPayments')}</h4>
+                <h4 className="text-gray-700 text-sm mb-1 font-medium">{t('reports.summary.totalPayments')}</h4>
                 <div className="font-bold text-2xl">
                   {reportData.totalPayments.toLocaleString('ar-EG')} 
-                  <span className="text-sm font-normal">{t(`common.currency.${reportData.client.currency}`)}</span>
+                  <span className="text-sm font-medium">{t(`common.currency.${reportData.client.currency}`)}</span>
                 </div>
               </div>
               
               <div className="p-4 bg-white rounded-lg border border-gray-200">
-                <h4 className="text-gray-500 text-sm mb-1">{t('reports.summary.remainingBalance')}</h4>
+                <h4 className="text-gray-700 text-sm mb-1 font-medium">{t('reports.summary.remainingBalance')}</h4>
                 <div className="font-bold text-2xl">
                   {reportData.balance.toLocaleString('ar-EG')} 
-                  <span className="text-sm font-normal">{t(`common.currency.${reportData.client.currency}`)}</span>
+                  <span className="text-sm font-medium">{t(`common.currency.${reportData.client.currency}`)}</span>
                 </div>
               </div>
             </div>
@@ -180,22 +180,22 @@ export function ClientReport({ onBack }: ClientReportProps) {
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-700 uppercase tracking-wider">
                       {t('reports.invoiceNumber')}
                     </th>
-                    <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-700 uppercase tracking-wider">
                       {t('reports.date')}
                     </th>
-                    <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-700 uppercase tracking-wider">
                       {t('reports.amount')}
                     </th>
-                    <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-700 uppercase tracking-wider">
                       {t('reports.paidAmount')}
                     </th>
-                    <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-700 uppercase tracking-wider">
                       {t('reports.remainingAmount')}
                     </th>
-                    <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-700 uppercase tracking-wider">
                       {t('reports.status')}
                     </th>
                   </tr>
