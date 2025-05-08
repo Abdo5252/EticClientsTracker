@@ -82,7 +82,7 @@ export function ClientReport({ onBack }: ClientReportProps) {
       <div className="mb-6">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           <div className="md:col-span-2">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-bold text-gray-800 mb-2">
               {t('reports.client')}
             </label>
             <Select 
@@ -90,7 +90,7 @@ export function ClientReport({ onBack }: ClientReportProps) {
               onValueChange={setSelectedClientId}
               disabled={isGenerating}
             >
-              <SelectTrigger>
+              <SelectTrigger className="border-gray-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-100">
                 <SelectValue placeholder={t('reports.selectClient')} />
               </SelectTrigger>
               <SelectContent>
@@ -110,7 +110,7 @@ export function ClientReport({ onBack }: ClientReportProps) {
           </div>
           
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-bold text-gray-800 mb-2">
               {t('reports.startDate')}
             </label>
             <Input 
@@ -118,11 +118,12 @@ export function ClientReport({ onBack }: ClientReportProps) {
               value={startDate} 
               onChange={(e) => setStartDate(e.target.value)}
               disabled={isGenerating}
+              className="border-gray-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
             />
           </div>
           
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-bold text-gray-800 mb-2">
               {t('reports.endDate')}
             </label>
             <Input 
@@ -130,6 +131,7 @@ export function ClientReport({ onBack }: ClientReportProps) {
               value={endDate} 
               onChange={(e) => setEndDate(e.target.value)}
               disabled={isGenerating}
+              className="border-gray-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
             />
           </div>
           
@@ -137,8 +139,19 @@ export function ClientReport({ onBack }: ClientReportProps) {
             <Button 
               onClick={handleGenerateReport}
               disabled={!selectedClientId || isGenerating}
+              className="bg-blue-700 hover:bg-blue-800 text-white font-medium px-6 py-2"
             >
-              {isGenerating || isLoadingReport ? t('common.loading') : t('reports.createReport')}
+              {isGenerating || isLoadingReport ? 
+                <div className="flex items-center gap-2">
+                  <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></div>
+                  <span>{t('common.loading')}</span>
+                </div>
+                : 
+                <div className="flex items-center gap-2">
+                  <i className="ri-file-chart-line"></i>
+                  <span>{t('reports.createReport')}</span>
+                </div>
+              }
             </Button>
           </div>
         </div>
@@ -146,56 +159,56 @@ export function ClientReport({ onBack }: ClientReportProps) {
       
       {reportData && (
         <>
-          <div className="bg-gray-50 p-4 rounded-lg mb-6">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="p-4 bg-white rounded-lg border border-gray-200">
-                <h4 className="text-gray-700 text-sm mb-1 font-medium">{t('reports.summary.totalSales')}</h4>
-                <div className="font-bold text-2xl">
+          <div className="bg-gray-100 p-6 rounded-lg mb-6 shadow-sm">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="p-5 bg-white rounded-lg border border-gray-300 shadow-sm">
+                <h4 className="text-gray-800 text-sm mb-2 font-bold">{t('reports.summary.totalSales')}</h4>
+                <div className="font-bold text-2xl text-blue-700">
                   {reportData.totalSales.toLocaleString('ar-EG')} 
-                  <span className="text-sm font-medium">{t(`common.currency.${reportData.client.currency}`)}</span>
+                  <span className="text-base text-gray-700 font-medium mr-1">{t(`common.currency.${reportData.client.currency}`)}</span>
                 </div>
               </div>
               
-              <div className="p-4 bg-white rounded-lg border border-gray-200">
-                <h4 className="text-gray-700 text-sm mb-1 font-medium">{t('reports.summary.totalPayments')}</h4>
-                <div className="font-bold text-2xl">
+              <div className="p-5 bg-white rounded-lg border border-gray-300 shadow-sm">
+                <h4 className="text-gray-800 text-sm mb-2 font-bold">{t('reports.summary.totalPayments')}</h4>
+                <div className="font-bold text-2xl text-green-700">
                   {reportData.totalPayments.toLocaleString('ar-EG')} 
-                  <span className="text-sm font-medium">{t(`common.currency.${reportData.client.currency}`)}</span>
+                  <span className="text-base text-gray-700 font-medium mr-1">{t(`common.currency.${reportData.client.currency}`)}</span>
                 </div>
               </div>
               
-              <div className="p-4 bg-white rounded-lg border border-gray-200">
-                <h4 className="text-gray-700 text-sm mb-1 font-medium">{t('reports.summary.remainingBalance')}</h4>
-                <div className="font-bold text-2xl">
+              <div className="p-5 bg-white rounded-lg border border-gray-300 shadow-sm">
+                <h4 className="text-gray-800 text-sm mb-2 font-bold">{t('reports.summary.remainingBalance')}</h4>
+                <div className="font-bold text-2xl text-red-700">
                   {reportData.balance.toLocaleString('ar-EG')} 
-                  <span className="text-sm font-medium">{t(`common.currency.${reportData.client.currency}`)}</span>
+                  <span className="text-base text-gray-700 font-medium mr-1">{t(`common.currency.${reportData.client.currency}`)}</span>
                 </div>
               </div>
             </div>
           </div>
           
           <div className="mb-8">
-            <h3 className="text-lg font-semibold mb-4">{t('reports.invoices')}</h3>
+            <h3 className="text-lg font-bold text-gray-900 mb-4">{t('reports.invoices')}</h3>
             <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+              <table className="min-w-full divide-y divide-gray-300">
+                <thead className="bg-gray-100">
                   <tr>
-                    <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-700 uppercase tracking-wider">
+                    <th scope="col" className="px-6 py-3 text-right text-xs font-bold text-gray-800 uppercase tracking-wider">
                       {t('reports.invoiceNumber')}
                     </th>
-                    <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-700 uppercase tracking-wider">
+                    <th scope="col" className="px-6 py-3 text-right text-xs font-bold text-gray-800 uppercase tracking-wider">
                       {t('reports.date')}
                     </th>
-                    <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-700 uppercase tracking-wider">
+                    <th scope="col" className="px-6 py-3 text-right text-xs font-bold text-gray-800 uppercase tracking-wider">
                       {t('reports.amount')}
                     </th>
-                    <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-700 uppercase tracking-wider">
+                    <th scope="col" className="px-6 py-3 text-right text-xs font-bold text-gray-800 uppercase tracking-wider">
                       {t('reports.paidAmount')}
                     </th>
-                    <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-700 uppercase tracking-wider">
+                    <th scope="col" className="px-6 py-3 text-right text-xs font-bold text-gray-800 uppercase tracking-wider">
                       {t('reports.remainingAmount')}
                     </th>
-                    <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-700 uppercase tracking-wider">
+                    <th scope="col" className="px-6 py-3 text-right text-xs font-bold text-gray-800 uppercase tracking-wider">
                       {t('reports.status')}
                     </th>
                   </tr>
@@ -239,24 +252,24 @@ export function ClientReport({ onBack }: ClientReportProps) {
           </div>
           
           <div>
-            <h3 className="text-lg font-semibold mb-4">{t('reports.payments')}</h3>
+            <h3 className="text-lg font-bold text-gray-900 mb-4">{t('reports.payments')}</h3>
             <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+              <table className="min-w-full divide-y divide-gray-300">
+                <thead className="bg-gray-100">
                   <tr>
-                    <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-700 uppercase tracking-wider">
+                    <th scope="col" className="px-6 py-3 text-right text-xs font-bold text-gray-800 uppercase tracking-wider">
                       {t('reports.date')}
                     </th>
-                    <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-700 uppercase tracking-wider">
+                    <th scope="col" className="px-6 py-3 text-right text-xs font-bold text-gray-800 uppercase tracking-wider">
                       {t('reports.amount')}
                     </th>
-                    <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-700 uppercase tracking-wider">
+                    <th scope="col" className="px-6 py-3 text-right text-xs font-bold text-gray-800 uppercase tracking-wider">
                       {t('reports.paymentMethod')}
                     </th>
-                    <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-700 uppercase tracking-wider">
+                    <th scope="col" className="px-6 py-3 text-right text-xs font-bold text-gray-800 uppercase tracking-wider">
                       {t('reports.checkTransNumber')}
                     </th>
-                    <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-700 uppercase tracking-wider">
+                    <th scope="col" className="px-6 py-3 text-right text-xs font-bold text-gray-800 uppercase tracking-wider">
                       {t('reports.notes')}
                     </th>
                   </tr>
