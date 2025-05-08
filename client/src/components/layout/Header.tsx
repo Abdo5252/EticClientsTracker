@@ -55,10 +55,10 @@ export function Header({
   return (
     <header className="bg-white border-b border-gray-200 py-4 px-6">
       <div className="flex items-center justify-between">
-        {/* Mobile menu toggle */}
-        <div className="md:hidden">
+        {/* Mobile menu toggle - visible on small screens */}
+        <div className="md:hidden flex items-center">
           <button 
-            className="text-gray-600 hover:text-gray-900 p-2 rounded-lg hover:bg-gray-100 transition-colors" 
+            className="text-blue-800 hover:text-blue-900 p-2 rounded-lg bg-blue-50 hover:bg-blue-100 transition-colors" 
             onClick={onToggleSidebar}
             aria-label="Toggle menu"
           >
@@ -66,10 +66,10 @@ export function Header({
           </button>
         </div>
         
-        {/* Desktop sidebar toggle (visible only on medium and larger screens) */}
-        <div className="hidden md:block">
+        {/* Desktop sidebar toggle - visible only on medium and larger screens */}
+        <div className="hidden md:flex">
           <button 
-            className="text-gray-600 hover:text-gray-900 p-2 rounded-lg hover:bg-gray-100 transition-colors" 
+            className="text-blue-800 hover:text-blue-900 p-2 rounded-lg bg-blue-50 hover:bg-blue-100 transition-colors" 
             onClick={onToggleDesktopSidebar}
             aria-label={isDesktopSidebarOpen ? "Close sidebar" : "Open sidebar"}
           >

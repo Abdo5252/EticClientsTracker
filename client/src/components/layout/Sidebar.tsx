@@ -33,29 +33,33 @@ export function Sidebar({ className }: SidebarProps) {
   ];
   
   return (
-    <aside className={cn("bg-blue-900 text-white w-64 flex-shrink-0 flex flex-col h-screen border-l border-blue-800", className)}>
-      <div className="p-4 border-b border-blue-800">
-        <h2 className="text-xl font-bold text-white">{t('common.appName')}</h2>
-        <p className="text-sm text-blue-200">{t('common.appDescription')}</p>
+    <aside className={cn(
+      "bg-blue-900 text-white w-64 flex-shrink-0 flex flex-col h-screen shadow-lg", 
+      "border-l border-blue-800 fixed right-0 top-0 z-40 md:relative",
+      className
+    )}>
+      <div className="p-5 border-b border-blue-800">
+        <h2 className="text-xl font-bold text-white text-right">{t('common.appName')}</h2>
+        <p className="text-sm text-blue-200 text-right">{t('common.appDescription')}</p>
       </div>
       
-      <nav className="mt-4 px-2 flex-grow overflow-y-auto">
-        <ul className="space-y-1">
+      <nav className="mt-4 px-3 flex-grow overflow-y-auto">
+        <ul className="space-y-2">
           {navItems.map((item) => (
             <li key={item.path}>
               <a 
                 href={item.path}
                 className={cn(
-                  "flex items-center px-4 py-3 rounded-lg transition-colors",
+                  "flex items-center px-4 py-3 rounded-lg transition-colors text-right",
                   location === item.path 
                     ? "bg-blue-800 text-white" 
                     : "text-blue-100 hover:bg-blue-800 hover:text-white"
                 )}
               >
-                <span className="ml-3 flex items-center justify-center text-white">
+                <span className="ml-3 flex items-center justify-center text-white order-2">
                   {item.icon}
                 </span>
-                <span className="font-medium">{item.label}</span>
+                <span className="font-medium mr-2 flex-1">{item.label}</span>
               </a>
             </li>
           ))}
@@ -64,15 +68,15 @@ export function Sidebar({ className }: SidebarProps) {
       
       {user && (
         <div className="p-4 border-t border-blue-800">
-          <div className="flex items-center">
-            <div className="w-10 h-10 rounded-full bg-blue-700 flex items-center justify-center ml-3 text-white">
+          <div className="flex items-center justify-end">
+            <div>
+              <h4 className="font-medium text-white text-right">{user.displayName}</h4>
+              <p className="text-xs text-blue-200 text-right">{user.role === 'admin' ? t('users.roles.admin') : t('users.roles.user')}</p>
+            </div>
+            <div className="w-10 h-10 rounded-full bg-blue-700 flex items-center justify-center mr-3 text-white">
               <span className="text-lg font-semibold">
                 {user.displayName && user.displayName.charAt(0)}
               </span>
-            </div>
-            <div>
-              <h4 className="font-medium text-white">{user.displayName}</h4>
-              <p className="text-xs text-blue-200">{user.role === 'admin' ? 'مدير النظام' : 'مستخدم'}</p>
             </div>
           </div>
           <button 

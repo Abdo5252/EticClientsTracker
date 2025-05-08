@@ -65,9 +65,9 @@ export function Layout({ children, title }: LayoutProps) {
   return (
     <div className="flex h-screen overflow-hidden bg-gray-50">
       {/* Desktop Sidebar - controlled by toggle */}
-      {isDesktopSidebarOpen && (
-        <Sidebar className="hidden md:flex" />
-      )}
+      <div className={`hidden md:block transition-all duration-300 ${isDesktopSidebarOpen ? 'w-64' : 'w-0'}`}>
+        {isDesktopSidebarOpen && <Sidebar />}
+      </div>
       
       {/* Mobile Sidebar - conditionally shown with overlay */}
       {isMobileSidebarOpen && (
@@ -92,16 +92,16 @@ export function Layout({ children, title }: LayoutProps) {
           onToggleDesktopSidebar={toggleDesktopSidebar}
         />
         
-        {/* Desktop Sidebar Toggle Button (fixed position) */}
+        {/* Desktop Sidebar Toggle Button (fixed position) - properly positioned for RTL */}
         <button 
           onClick={toggleDesktopSidebar}
-          className="fixed top-20 right-5 z-40 bg-white p-2 rounded-full shadow-md border border-gray-200 hidden md:flex hover:bg-gray-100 transition-colors"
-          aria-label={isDesktopSidebarOpen ? "Close sidebar" : "Open sidebar"}
+          className={`fixed top-4 ${isDesktopSidebarOpen ? 'right-[260px]' : 'right-4'} z-50 bg-blue-50 p-2 rounded-full shadow-lg border border-blue-200 hidden md:flex items-center justify-center hover:bg-blue-100 transition-all duration-300`}
+          aria-label={isDesktopSidebarOpen ? t('navigation.closeSidebar') : t('navigation.openSidebar')}
         >
           {isDesktopSidebarOpen ? (
-            <PanelLeftClose className="h-5 w-5 text-gray-600" />
+            <PanelLeftClose className="h-5 w-5 text-blue-700" />
           ) : (
-            <PanelLeftOpen className="h-5 w-5 text-gray-600" />
+            <PanelLeftOpen className="h-5 w-5 text-blue-700" />
           )}
         </button>
         
