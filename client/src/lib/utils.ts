@@ -1,5 +1,6 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { t } from "./i18n";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -70,10 +71,10 @@ export function getInvoiceStatusClass(status: string): string {
 
 export function getPaymentMethodText(method: string): string {
   const methodMap: Record<string, string> = {
-    'cash': 'نقدي',
-    'transfer': 'تحويل بنكي',
-    'check': 'شيك',
-    'card': 'بطاقة ائتمان'
+    'cash': t('payments.cash'),
+    'transfer': t('payments.transfer'),
+    'check': t('payments.check'),
+    'card': t('payments.card')
   };
   return methodMap[method] || method;
 }
