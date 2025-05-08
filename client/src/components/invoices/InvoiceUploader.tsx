@@ -203,7 +203,7 @@ export function InvoiceUploader({ onUpload, isUploading }: InvoiceUploaderProps)
       <CardContent>
         {uploadStatus === 'success' && uploadResult ? (
           <div className="space-y-4">
-            <Alert variant={uploadResult.failed > 0 ? "warning" : "default"}>
+            <Alert variant={uploadResult.failed > 0 ? "destructive" : "default"}>
               <Info className="h-4 w-4" />
               <AlertTitle>نتائج تحميل الفواتير</AlertTitle>
               <AlertDescription>

@@ -16,7 +16,7 @@ export function ClientItem({ name, code, balance, currency }: ClientItemProps) {
           {generateInitials(name)}
         </div>
         <div>
-          <h4 className="font-medium">{name}</h4>
+          <h4 className="font-semibold text-gray-900">{name}</h4>
           <p className="text-xs text-gray-700">كود: {code}</p>
         </div>
       </div>

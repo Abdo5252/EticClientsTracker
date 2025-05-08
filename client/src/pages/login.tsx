@@ -55,7 +55,7 @@ export default function Login() {
       <div className="bg-white rounded-2xl shadow-lg p-8 w-full max-w-md">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-blue-900 mb-2">{t('common.appName')}</h1>
-          <p className="text-gray-600">{t('common.appDescription')}</p>
+          <p className="text-gray-700">{t('common.appDescription')}</p>
         </div>
         
         <Form {...form}>
@@ -76,7 +76,7 @@ export default function Login() {
                     <Input 
                       placeholder={t('login.username')} 
                       {...field} 
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-800"
+                      className="w-full px-4 py-2 border border-gray-400 rounded-lg text-gray-800 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
                     />
                   </FormControl>
                   <FormMessage className="text-red-600" />
@@ -95,7 +95,7 @@ export default function Login() {
                       type="password" 
                       placeholder={t('login.password')} 
                       {...field} 
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-800"
+                      className="w-full px-4 py-2 border border-gray-400 rounded-lg text-gray-800 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
                     />
                   </FormControl>
                   <FormMessage className="text-red-600" />
