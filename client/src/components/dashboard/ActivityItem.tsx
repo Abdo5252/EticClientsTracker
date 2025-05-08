@@ -46,9 +46,9 @@ export function ActivityItem({ type, title, description, timestamp }: ActivityIt
       <div className="flex-1">
         <div className="flex justify-between">
           <h4 className="font-medium">{title}</h4>
-          <span className="text-xs text-gray-500">{getRelativeTime(timestamp)}</span>
+          <span className="text-xs text-gray-700">{getRelativeTime(timestamp)}</span>
         </div>
-        <p className="text-sm text-gray-600">{description}</p>
+        <p className="text-sm text-gray-700">{description}</p>
       </div>
     </div>
   );

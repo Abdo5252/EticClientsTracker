@@ -46,11 +46,11 @@ export function DashboardCard({
     <div className={cn("bg-white rounded-xl shadow-sm p-6 border-t-4", colorClasses[color].border)}>
       <div className="flex justify-between">
         <div>
-          <h3 className="text-gray-500 text-sm mb-1">{title}</h3>
+          <h3 className="text-gray-700 text-sm mb-1 font-medium">{title}</h3>
           <div className="font-bold text-2xl">
             {typeof value === 'number' ? value.toLocaleString('ar-EG') : value}
             {' '}
-            <span className="text-sm font-normal">{currency || unit || ''}</span>
+            <span className="text-sm font-medium">{currency || unit || ''}</span>
           </div>
           {change !== undefined && (
             <div className={cn(

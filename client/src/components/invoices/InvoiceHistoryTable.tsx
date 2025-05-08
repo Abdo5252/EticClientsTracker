@@ -65,10 +65,10 @@ export function InvoiceHistoryTable({ invoices, isLoading }: InvoiceHistoryTable
         <tbody className="bg-white divide-y divide-gray-200">
           {sortedDates.map(date => (
             <tr key={date}>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                 {date}
               </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                 {groupedInvoices[date].length}
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
@@ -82,7 +82,7 @@ export function InvoiceHistoryTable({ invoices, isLoading }: InvoiceHistoryTable
                   size="sm" 
                   onClick={() => setSelectedInvoice(groupedInvoices[date][0])}
                 >
-                  <i className="ri-file-list-line text-primary hover:text-primary-700"></i>
+                  <i className="ri-file-list-line text-blue-700 hover:text-blue-900"></i>
                 </Button>
               </td>
             </tr>
@@ -108,33 +108,33 @@ export function InvoiceHistoryTable({ invoices, isLoading }: InvoiceHistoryTable
             <div className="border-t border-gray-200 pt-4">
               <dl className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <dt className="text-sm font-medium text-gray-500">{t('invoices.invoiceNumber')}</dt>
+                  <dt className="text-sm font-medium text-gray-700">{t('invoices.invoiceNumber')}</dt>
                   <dd className="mt-1 text-sm text-gray-900">{selectedInvoice.invoiceNumber}</dd>
                 </div>
                 <div>
-                  <dt className="text-sm font-medium text-gray-500">{t('invoices.invoiceDate')}</dt>
+                  <dt className="text-sm font-medium text-gray-700">{t('invoices.invoiceDate')}</dt>
                   <dd className="mt-1 text-sm text-gray-900">{formatDate(selectedInvoice.invoiceDate)}</dd>
                 </div>
                 <div>
-                  <dt className="text-sm font-medium text-gray-500">{t('invoices.totalAmount')}</dt>
+                  <dt className="text-sm font-medium text-gray-700">{t('invoices.totalAmount')}</dt>
                   <dd className="mt-1 text-sm text-gray-900">
                     {selectedInvoice.totalAmount.toLocaleString('ar-EG')} {selectedInvoice.currency}
                   </dd>
                 </div>
                 <div>
-                  <dt className="text-sm font-medium text-gray-500">{t('invoices.paidAmount')}</dt>
+                  <dt className="text-sm font-medium text-gray-700">{t('invoices.paidAmount')}</dt>
                   <dd className="mt-1 text-sm text-gray-900">
                     {selectedInvoice.paidAmount.toLocaleString('ar-EG')} {selectedInvoice.currency}
                   </dd>
                 </div>
                 <div>
-                  <dt className="text-sm font-medium text-gray-500">{t('invoices.remainingAmount')}</dt>
+                  <dt className="text-sm font-medium text-gray-700">{t('invoices.remainingAmount')}</dt>
                   <dd className="mt-1 text-sm text-gray-900">
                     {(selectedInvoice.totalAmount - selectedInvoice.paidAmount).toLocaleString('ar-EG')} {selectedInvoice.currency}
                   </dd>
                 </div>
                 <div>
-                  <dt className="text-sm font-medium text-gray-500">{t('invoices.status')}</dt>
+                  <dt className="text-sm font-medium text-gray-700">{t('invoices.status')}</dt>
                   <dd className="mt-1">
                     <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getInvoiceStatusClass(selectedInvoice.status)}`}>
                       {getInvoiceStatusText(selectedInvoice.status)}
