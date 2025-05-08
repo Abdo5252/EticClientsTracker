@@ -92,18 +92,7 @@ export function Layout({ children, title }: LayoutProps) {
           onToggleDesktopSidebar={toggleDesktopSidebar}
         />
         
-        {/* Desktop Sidebar Toggle Button (fixed position) - properly positioned for RTL */}
-        <button 
-          onClick={toggleDesktopSidebar}
-          className={`fixed top-4 ${isDesktopSidebarOpen ? 'right-[260px]' : 'right-4'} z-50 bg-blue-600 p-2 rounded-full shadow-lg border border-blue-400 hidden md:flex items-center justify-center hover:bg-blue-700 transition-all duration-300`}
-          aria-label={isDesktopSidebarOpen ? t('navigation.closeSidebar') : t('navigation.openSidebar')}
-        >
-          {isDesktopSidebarOpen ? (
-            <PanelLeftClose className="h-5 w-5 text-white" />
-          ) : (
-            <PanelLeftOpen className="h-5 w-5 text-white" />
-          )}
-        </button>
+        {/* Desktop Sidebar Toggle Button removed to avoid duplication */}
         
         {/* Scrollable content area */}
         <div className="flex-1 overflow-y-auto pb-16 md:pb-0">

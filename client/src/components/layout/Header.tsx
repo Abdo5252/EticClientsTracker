@@ -71,6 +71,21 @@ export function Header({
         
         {/* Right side controls */}
         <div className="flex items-center space-x-4 space-x-reverse">
+          {/* Desktop Sidebar Toggle Button - visible only on desktop */}
+          {onToggleDesktopSidebar && (
+            <button 
+              className="hidden md:flex text-white bg-blue-700 hover:bg-blue-800 p-2 rounded-lg transition-colors"
+              onClick={onToggleDesktopSidebar}
+              aria-label={isDesktopSidebarOpen ? t('navigation.closeSidebar') : t('navigation.openSidebar')}
+            >
+              {isDesktopSidebarOpen ? (
+                <PanelLeftClose className="h-5 w-5 text-white" />
+              ) : (
+                <PanelLeftOpen className="h-5 w-5 text-white" />
+              )}
+            </button>
+          )}
+          
           {/* Notifications */}
           <button className="relative text-gray-600 hover:text-gray-900 p-2 rounded-lg hover:bg-gray-100 transition-colors">
             <Bell className="h-5 w-5" />
