@@ -192,65 +192,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Upload initial client data
+  // Client data is now loaded directly from clients-data.json
   app.post("/api/clients/upload", requireAuth, async (req, res) => {
     try {
-      if (!req.body || !req.body.data || !Array.isArray(req.body.data)) {
-        return res.status(400).json({ message: "Invalid data format" });
-      }
-
-      const clients = req.body.data;
-      const results = {
-        success: 0,
-        failed: 0,
-        errors: [] as string[]
-      };
-
-      console.log('Received client data:', clients);
-
-      for (const client of clients) {
-        try {
-          // Extract client data
-          const clientData = {
-            clientCode: String(client.clientCode || client.CODE || "").trim(),
-            clientName: String(client.clientName || client['CUSTOMER NAME'] || "").trim(),
-            salesRepName: String(client.salesRepName || client['SALES REP'] || "").trim(),
-            currency: client.currency || "EGP"
-          };
-
-          console.log('Processing client:', clientData);
-
-          // Skip empty rows
-          if (!clientData.clientCode && !clientData.clientName) {
-            console.log('Skipping empty row');
-            continue;
-          }
-
-          // Validate client data
-          const validatedData = insertClientSchema.parse(clientData);
-
-          // Check if client code already exists
-          const existingClient = await storage.getClientByCode(validatedData.clientCode);
-          if (existingClient) {
-            results.failed++;
-            results.errors.push(`العميل برمز ${validatedData.clientCode} موجود بالفعل`);
-            continue;
-          }
-
-          // Create client
-          await storage.createClient(validatedData);
-          results.success++;
-        } catch (error) {
-          results.failed++;
-          if (error instanceof ZodError) {
-            results.errors.push(`خطأ في بيانات العميل: ${error.errors.map(e => e.message).join(', ')}`);
-          } else {
-            results.errors.push(`خطأ في العميل: ${client.clientName || client.name || "غير معروف"}`);
-          }
-        }
-      }
-
-      res.json(results);
+      res.status(400).json({ 
+        message: "This endpoint is deprecated. Client data is now loaded directly from clients-data.json file." 
+      });
     } catch (error) {
       res.status(500).json({ message: "Server error", error: error instanceof Error ? error.message : "Unknown error" });
     }

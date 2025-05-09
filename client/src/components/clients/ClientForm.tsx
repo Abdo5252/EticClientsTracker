@@ -161,6 +161,17 @@ export function ClientForm({ clientId, onSuccess }: ClientFormProps) {
           )}
         />
 
+        <div className="bg-yellow-50 border-r-4 border-warning p-4 mb-4 rounded-md">
+          <div className="flex">
+            <div className="flex-shrink-0 ml-3">
+              <i className="ri-alert-line text-warning"></i>
+            </div>
+            <div>
+              <h4 className="text-sm text-warning font-medium">تغيير في طريقة إدارة العملاء</h4>
+              <p className="text-xs text-gray-600 mt-1">يتم الآن قراءة بيانات العملاء مباشرة من ملف clients-data.json</p>
+            </div>
+          </div>
+        </div>
         <div className="flex justify-end space-x-2 space-x-reverse pt-4">
           <Button 
             type="button" 
@@ -169,14 +180,8 @@ export function ClientForm({ clientId, onSuccess }: ClientFormProps) {
           >
             {t('common.cancel')}
           </Button>
-          <Button 
-            type="submit" 
-            disabled={createClient.isPending || updateClient.isPending}
-          >
-            {createClient.isPending || updateClient.isPending 
-              ? t('common.loading') 
-              : isEditing ? t('common.save') : t('common.add')
-            }
+          <Button type="submit" disabled={true}>
+            {t('common.save')} (معطل)
           </Button>
         </div>
       </form>

@@ -151,10 +151,47 @@ export class MemStorage implements IStorage {
   }
 
   async getClients(): Promise<Client[]> {
-    return Array.from(this.clients.values());
+    try {
+      // Read clients from JSON file
+      const fs = require('fs');
+      const path = require('path');
+      const clientsPath = path.resolve(process.cwd(), 'clients-data.json');
+      
+      if (!fs.existsSync(clientsPath)) {
+        console.log('clients-data.json not found, returning in-memory clients');
+        return Array.from(this.clients.values());
+      }
+      
+      const clientsData = JSON.parse(fs.readFileSync(clientsPath, 'utf8'));
+      
+      // Map JSON data to client objects
+      const clients: Client[] = clientsData.map((client: any, index: number) => {
+        const id = index + 1;
+        return {
+          id,
+          clientCode: String(client.clientCode || client.CODE || "").trim(),
+          clientName: String(client.clientName || client['CUSTOMER NAME'] || "").trim(),
+          salesRepName: String(client.salesRepName || client['SALES REP'] || "").trim(),
+          currency: client.currency || "EGP",
+          balance: client.balance || 0
+        };
+      });
+      
+      // Update in-memory store with clients from file
+      this.clients.clear();
+      clients.forEach(client => {
+        this.clients.set(client.id, client);
+      });
+      
+      return clients;
+    } catch (error) {
+      console.error('Error reading clients from JSON file:', error);
+      return Array.from(this.clients.values());
+    }
   }
 
   async createClient(client: InsertClient): Promise<Client> {
+    console.log('Warning: Creating clients in-memory is deprecated. Update clients-data.json instead.');
     const id = this.currentClientId++;
     const newClient: Client = { ...client, id, balance: 0 };
     this.clients.set(id, newClient);

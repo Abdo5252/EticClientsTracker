@@ -1,64 +1,47 @@
-import * as XLSX from 'xlsx';
-import { storage } from './storage';
+import * as fs from 'fs';
+import * as path from 'path';
 import { insertClientSchema } from '@shared/schema';
-import { readFileSync } from 'fs';
-import path from 'path';
 
 /**
- * Import clients from Excel file
+ * Import clients from JSON file
  * 
  * Usage:
- * npm run import-clients -- path/to/your/excel-file.xlsx
+ * npm run import-clients
  */
 async function importClients() {
   try {
-    // Get file path from command line args
-    const filePath = process.argv[2];
+    const jsonFilePath = path.resolve(process.cwd(), 'clients-data.json');
 
-    if (!filePath) {
-      console.error('Please provide a file path as an argument');
-      console.error('Example: npm run import-clients -- ./clients-data.xlsx');
+    // Check if file exists
+    if (!fs.existsSync(jsonFilePath)) {
+      console.error('Error: clients-data.json file not found');
+      console.error('Create a clients-data.json file in the root directory');
       process.exit(1);
     }
 
-    console.log(`Importing clients from: ${filePath}`);
+    console.log(`Reading clients from: ${jsonFilePath}`);
 
     // Read file
-    console.log('Reading file from path:', path.resolve(process.cwd(), filePath));
-    const fileBuffer = readFileSync(path.resolve(process.cwd(), filePath));
-    console.log('File size:', fileBuffer.length, 'bytes');
-    const workbook = XLSX.read(fileBuffer);
-    console.log('Workbook sheet names:', workbook.SheetNames);
+    const fileContents = fs.readFileSync(jsonFilePath, 'utf8');
+    const clientsData = JSON.parse(fileContents);
 
-    // Get first sheet
-    const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+    console.log(`Found ${clientsData.length} clients in file`);
 
-    // Convert to JSON
-    const jsonData = XLSX.utils.sheet_to_json(worksheet);
-
-    console.log(`Found ${jsonData.length} records in file`);
-
-    // Log the first row to see column names
-    if (jsonData.length > 0) {
-      console.log('First row column names:', Object.keys(jsonData[0]));
-      console.log('First row data sample:', jsonData[0]);
-    }
-
-    // Process data
+    // Validate the data format
     const results = {
-      success: 0,
-      failed: 0,
+      valid: 0,
+      invalid: 0,
       errors: [] as string[]
     };
 
-    for (const row of jsonData) {
+    for (const client of clientsData) {
       try {
-        // Extract client data from excel columns
+        // Extract client data
         const clientData = {
-          clientCode: String(row.CODE || row.clientCode || "").trim(),
-          clientName: String(row['CUSTOMER NAME'] || row.clientName || "").trim(),
-          salesRepName: String(row['SALES REP'] || row.salesRepName || "").trim(),
-          currency: row.currency || "EGP"
+          clientCode: String(client.clientCode || client.CODE || "").trim(),
+          clientName: String(client.clientName || client['CUSTOMER NAME'] || "").trim(),
+          salesRepName: String(client.salesRepName || client['SALES REP'] || "").trim(),
+          currency: client.currency || "EGP"
         };
 
         // Skip empty rows
@@ -67,32 +50,19 @@ async function importClients() {
           continue;
         }
 
-        console.log('Processing client:', clientData);
-
         // Validate client data
-        const validatedData = insertClientSchema.parse(clientData);
+        insertClientSchema.parse(clientData);
+        results.valid++;
 
-        // Check if client code already exists
-        const existingClient = await storage.getClientByCode(validatedData.clientCode);
-        if (existingClient) {
-          results.failed++;
-          results.errors.push(`Client with code ${validatedData.clientCode} already exists`);
-          continue;
-        }
-
-        // Create client
-        await storage.createClient(validatedData);
-        results.success++;
-        console.log(`Successfully added client: ${clientData.clientName}`);
       } catch (error: any) {
-        results.failed++;
-        results.errors.push(`Error processing client: ${error.message}`);
+        results.invalid++;
+        results.errors.push(`Error validating client: ${error.message}`);
       }
     }
 
-    console.log('\n--- Import Summary ---');
-    console.log(`Successful imports: ${results.success}`);
-    console.log(`Failed imports: ${results.failed}`);
+    console.log('\n--- Validation Summary ---');
+    console.log(`Valid clients: ${results.valid}`);
+    console.log(`Invalid clients: ${results.invalid}`);
 
     if (results.errors.length > 0) {
       console.log('\nErrors:');
@@ -100,6 +70,8 @@ async function importClients() {
         console.log(`${index + 1}. ${error}`);
       });
     }
+
+    console.log('\nClients are loaded directly from clients-data.json file.');
 
   } catch (error) {
     console.error('Import failed:', error);
