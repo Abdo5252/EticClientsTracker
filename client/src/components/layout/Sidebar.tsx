@@ -28,7 +28,6 @@ export function Sidebar({ className }: SidebarProps) {
     { path: '/invoices', label: t('navigation.invoices'), icon: <FileUp className="h-5 w-5" /> },
     { path: '/payments', label: t('navigation.payments'), icon: <CreditCard className="h-5 w-5" /> },
     { path: '/reports', label: t('navigation.reports'), icon: <BarChart3 className="h-5 w-5" /> },
-    { path: '/client-upload', label: t('navigation.clientUpload'), icon: <FileSpreadsheet className="h-5 w-5" /> },
     { path: '/settings', label: t('navigation.settings'), icon: <Settings className="h-5 w-5" /> }
   ];
   

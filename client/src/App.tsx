@@ -12,7 +12,6 @@ import Clients from "@/pages/clients";
 import Invoices from "@/pages/invoices";
 import Payments from "@/pages/payments";
 import Reports from "@/pages/reports";
-import ClientDataInfo from "@/pages/client-upload";
 import Settings from "@/pages/settings";
 
 function ProtectedRoute({ component: Component, ...rest }: any) {
@@ -45,7 +44,6 @@ function Router() {
       <Route path="/invoices" component={() => <ProtectedRoute component={Invoices} />} />
       <Route path="/payments" component={() => <ProtectedRoute component={Payments} />} />
       <Route path="/reports" component={() => <ProtectedRoute component={Reports} />} />
-      <Route path="/client-upload" component={() => <ProtectedRoute component={ClientUpload} />} />
       <Route path="/settings" component={() => <ProtectedRoute component={Settings} />} />
       <Route component={NotFound} />
     </Switch>

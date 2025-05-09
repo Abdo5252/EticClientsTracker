@@ -69,16 +69,6 @@ export function useClients() {
     },
   });
 
-  const uploadClients = useMutation({
-    mutationFn: async (data: any[]) => {
-      console.log('Uploading clients locally:', data);
-      return data;
-    },
-    onSuccess: (newClients) => {
-      queryClient.setQueryData(['clients-data'], (old: any) => [...(old || []), ...newClients]);
-    },
-  });
-
   const deleteClient = useMutation({
     mutationFn: async (id: number) => {
       console.log('Deleting client locally:', id);
@@ -96,7 +86,6 @@ export function useClients() {
     isLoading,
     addClient,
     updateClient,
-    uploadClients,
     deleteClient
   };
 }
