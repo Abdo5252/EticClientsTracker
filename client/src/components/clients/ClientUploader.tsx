@@ -45,16 +45,52 @@ export function ClientUploader({ onUpload, isUploading }: ClientUploaderProps) {
       return;
     }
     
+    // Validate file extension
+    const fileExtension = file.name.split('.').pop()?.toLowerCase();
+    if (fileExtension !== 'xlsx' && fileExtension !== 'xls') {
+      toast({
+        title: "خطأ في نوع الملف",
+        description: "يرجى اختيار ملف Excel بصيغة .xlsx أو .xls",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     try {
+      toast({
+        title: "جاري معالجة الملف",
+        description: "يرجى الانتظار...",
+      });
+      
       const data = await parseExcelFile(file);
-      await onUpload(data);
+      
+      if (!data || data.length === 0) {
+        toast({
+          title: "خطأ في الملف",
+          description: "لم يتم العثور على بيانات في الملف أو تنسيق الملف غير صحيح",
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      console.log("Parsed data:", data);
+      const result = await onUpload(data);
+      
       setFile(null);
       
       // Reset file input
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
+      
+      toast({
+        title: "تم رفع الملف بنجاح",
+        description: `تم معالجة ${result.success} سجل بنجاح${result.failed > 0 ? ` و ${result.failed} سجل فشل` : ''}`,
+        variant: result.failed > 0 ? "default" : "default",
+      });
+      
     } catch (error) {
+      console.error("File upload error:", error);
       toast({
         title: "خطأ في معالجة الملف",
         description: error instanceof Error ? error.message : "حدث خطأ أثناء معالجة الملف",

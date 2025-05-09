@@ -27,13 +27,12 @@ export function useFileUpload() {
             // Convert Excel sheet to JSON
             const jsonData = XLSX.utils.sheet_to_json(worksheet);
             
-            // Map the data to match the expected format
+            // Map the data to match the expected format based on the Excel structure
             const mappedData = jsonData.map((row: any) => {
-              // This is a basic mapping - adjust based on your Excel structure
               return {
-                clientCode: row['كود العميل'] || row['Client Code'] || row['clientCode'] || '',
-                clientName: row['اسم العميل'] || row['Client Name'] || row['clientName'] || '',
-                salesRepName: row['اسم مندوب المبيعات'] || row['Sales Rep Name'] || row['salesRepName'] || '',
+                clientCode: row['CODE'] || row['كود العميل'] || row['Client Code'] || row['clientCode'] || '',
+                clientName: row['CUSTOMER NAME'] || row['اسم العميل'] || row['Client Name'] || row['clientName'] || '',
+                salesRepName: row['SALES REP'] || row['اسم مندوب المبيعات'] || row['Sales Rep Name'] || row['salesRepName'] || '',
                 invoiceNumber: row['رقم الفاتورة'] || row['Invoice Number'] || row['invoiceNumber'] || '',
                 invoiceDate: row['تاريخ الفاتورة'] || row['Invoice Date'] || row['invoiceDate'] || new Date().toISOString().split('T')[0],
                 totalAmount: parseFloat(row['إجمالي المبلغ'] || row['Total Amount'] || row['totalAmount'] || 0),

@@ -203,15 +203,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
         errors: [] as string[]
       };
       
+      console.log('Received client data:', clients);
+      
       for (const client of clients) {
         try {
           // Extract client data
           const clientData = {
-            clientCode: client.clientCode || client.code || "",
-            clientName: client.clientName || client.name || "",
-            salesRepName: client.salesRepName || client.salesRep || "",
+            clientCode: String(client.clientCode || client.CODE || "").trim(),
+            clientName: String(client.clientName || client['CUSTOMER NAME'] || "").trim(),
+            salesRepName: String(client.salesRepName || client['SALES REP'] || "").trim(),
             currency: client.currency || "EGP"
           };
+          
+          console.log('Processing client:', clientData);
+          
+          // Skip empty rows
+          if (!clientData.clientCode && !clientData.clientName) {
+            console.log('Skipping empty row');
+            continue;
+          }
           
           // Validate client data
           const validatedData = insertClientSchema.parse(clientData);

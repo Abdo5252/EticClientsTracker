@@ -36,6 +36,17 @@ export default function ClientUpload() {
               <div>
                 <h4 className="text-sm text-primary font-medium">{t('clientUpload.fileFormat')}</h4>
                 <p className="text-xs text-gray-600 mt-1">{t('clientUpload.fileFormatDesc')}</p>
+                <div className="mt-3 bg-white p-3 rounded border border-blue-200">
+                  <h5 className="text-xs font-medium mb-2">تنسيق الأعمدة المطلوب:</h5>
+                  <ul className="text-xs space-y-1 list-disc list-inside">
+                    <li><strong>CODE</strong>: كود العميل (مطلوب)</li>
+                    <li><strong>CUSTOMER NAME</strong>: اسم العميل (مطلوب)</li>
+                    <li><strong>SALES REP</strong>: اسم مندوب المبيعات (اختياري)</li>
+                  </ul>
+                  <div className="mt-2 text-xs text-gray-500">
+                    تأكد من أن عناوين الأعمدة متطابقة تماماً مع ما هو مذكور أعلاه.
+                  </div>
+                </div>
               </div>
             </div>
           </div>
