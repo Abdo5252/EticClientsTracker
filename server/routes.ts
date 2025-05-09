@@ -276,20 +276,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
       };
 
       console.log(`Processing ${invoices.length} invoices from upload`);
+      console.log(`Sample invoice data:`, invoices.length > 0 ? invoices[0] : 'No invoices');
       
       for (const invoice of invoices) {
         try {
+          // Skip invalid records
+          if (!invoice.invoiceNumber || !invoice.clientCode) {
+            results.failed++;
+            results.errors.push(`بيانات الفاتورة غير كاملة: ${JSON.stringify(invoice)}`);
+            console.log(`Incomplete invoice data:`, invoice);
+            continue;
+          }
+          
           // Find client by code (from Excel file)
-          const clientCode = invoice.clientCode;
+          const clientCode = String(invoice.clientCode).trim();
           console.log(`Looking for client with code: ${clientCode}`);
           
           let client = await storage.getClientByCode(clientCode);
           
           if (!client) {
-            results.failed++;
-            results.errors.push(`لم يتم العثور على العميل برمز ${clientCode} للفاتورة رقم ${invoice.invoiceNumber}`);
-            console.log(`Client not found for code: ${clientCode}`);
-            continue;
+            // Try alternative matching for client codes
+            const clients = await storage.getClients();
+            const fuzzyMatch = clients.find(c => 
+              c.clientCode.toLowerCase() === clientCode.toLowerCase() ||
+              c.clientCode.includes(clientCode) ||
+              clientCode.includes(c.clientCode)
+            );
+            
+            if (fuzzyMatch) {
+              client = fuzzyMatch;
+              console.log(`Found fuzzy match for client: ${clientCode} -> ${client.clientCode}`);
+            } else {
+              results.failed++;
+              results.errors.push(`لم يتم العثور على العميل برمز ${clientCode} للفاتورة رقم ${invoice.invoiceNumber}`);
+              console.log(`Client not found for code: ${clientCode}`);
+              continue;
+            }
           }
 
           // Check if invoice already exists
@@ -304,42 +326,106 @@ export async function registerRoutes(app: Express): Promise<Server> {
           // Parse date properly
           let invoiceDate;
           try {
+            console.log(`Parsing date: ${invoice.invoiceDate}, type: ${typeof invoice.invoiceDate}`);
+            
+            // Handle empty or null dates
+            if (!invoice.invoiceDate) {
+              // Default to current date if missing
+              invoiceDate = new Date();
+              console.log(`Using default date for invoice ${invoice.invoiceNumber}: ${invoiceDate}`);
+            }
             // Handle different date formats
-            if (typeof invoice.invoiceDate === 'string') {
-              // Try parsing various formats
-              const dateParts = invoice.invoiceDate.split('/');
-              if (dateParts.length === 3) {
-                // Format: DD/MM/YYYY or MM/DD/YYYY
-                const day = parseInt(dateParts[0]);
-                const month = parseInt(dateParts[1]) - 1; // months are 0-indexed in JS
-                const year = parseInt(dateParts[2]);
+            else if (typeof invoice.invoiceDate === 'string') {
+              // Try common date formats with regex patterns
+              
+              // Try DD/MM/YYYY or MM/DD/YYYY
+              const slashPattern = /^(\d{1,2})\/(\d{1,2})\/(\d{2,4})$/;
+              const slashMatch = invoice.invoiceDate.match(slashPattern);
+              
+              // Try YYYY-MM-DD
+              const isoPattern = /^(\d{4})-(\d{1,2})-(\d{1,2})$/;
+              const isoMatch = invoice.invoiceDate.match(isoPattern);
+              
+              // Try DD-MM-YYYY
+              const dashPattern = /^(\d{1,2})-(\d{1,2})-(\d{4})$/;
+              const dashMatch = invoice.invoiceDate.match(dashPattern);
+              
+              if (slashMatch) {
+                // Format: DD/MM/YYYY or MM/DD/YYYY - assuming DD/MM/YYYY for Middle East
+                const day = parseInt(slashMatch[1]);
+                const month = parseInt(slashMatch[2]) - 1; // months are 0-indexed in JS
+                const year = parseInt(slashMatch[3]);
+                // Add 2000 if year is only 2 digits
+                const fullYear = year < 100 ? year + 2000 : year;
+                invoiceDate = new Date(fullYear, month, day);
+                console.log(`Parsed slash date: ${day}/${month+1}/${fullYear} -> ${invoiceDate}`);
+              } 
+              else if (isoMatch) {
+                const year = parseInt(isoMatch[1]);
+                const month = parseInt(isoMatch[2]) - 1;
+                const day = parseInt(isoMatch[3]);
                 invoiceDate = new Date(year, month, day);
-              } else {
-                // Try standard date parsing
-                invoiceDate = new Date(invoice.invoiceDate);
+                console.log(`Parsed ISO date: ${year}-${month+1}-${day} -> ${invoiceDate}`);
               }
+              else if (dashMatch) {
+                const day = parseInt(dashMatch[1]);
+                const month = parseInt(dashMatch[2]) - 1;
+                const year = parseInt(dashMatch[3]);
+                invoiceDate = new Date(year, month, day);
+                console.log(`Parsed dash date: ${day}-${month+1}-${year} -> ${invoiceDate}`);
+              }
+              else {
+                // Try standard date parsing as fallback
+                invoiceDate = new Date(invoice.invoiceDate);
+                console.log(`Fallback date parsing: ${invoice.invoiceDate} -> ${invoiceDate}`);
+              }
+            } else if (invoice.invoiceDate instanceof Date) {
+              // If it's already a Date object
+              invoiceDate = invoice.invoiceDate;
+              console.log(`Using date object: ${invoiceDate}`);
             } else {
-              // If it's already a Date object or another format
+              // For numeric or other formats, try conversion
               invoiceDate = new Date(invoice.invoiceDate);
+              console.log(`Converted other format to date: ${invoice.invoiceDate} -> ${invoiceDate}`);
             }
             
             // Validate that we got a valid date
             if (isNaN(invoiceDate.getTime())) {
-              throw new Error("Invalid date format");
+              throw new Error(`Invalid date format: ${invoice.invoiceDate}`);
             }
           } catch (dateError) {
-            results.failed++;
-            results.errors.push(`تنسيق تاريخ غير صالح في الفاتورة رقم ${invoice.invoiceNumber}: ${invoice.invoiceDate}`);
-            console.log(`Invalid date format in invoice ${invoice.invoiceNumber}: ${invoice.invoiceDate}`);
-            continue;
+            console.error(`Date parsing error:`, dateError);
+            // Use current date as fallback
+            invoiceDate = new Date();
+            console.log(`Using fallback current date for invoice ${invoice.invoiceNumber}: ${invoiceDate}`);
+          }
+
+          // Parse amount properly
+          let totalAmount = 0;
+          try {
+            if (typeof invoice.totalAmount === 'number') {
+              totalAmount = invoice.totalAmount;
+            } else if (typeof invoice.totalAmount === 'string') {
+              // Remove currency symbols and commas, then parse
+              totalAmount = parseFloat(String(invoice.totalAmount).replace(/[^\d.-]/g, ''));
+            }
+            
+            // Validate amount
+            if (isNaN(totalAmount)) {
+              console.log(`Invalid amount format: ${invoice.totalAmount}, using 0`);
+              totalAmount = 0;
+            }
+          } catch (amountError) {
+            console.error(`Amount parsing error:`, amountError);
+            totalAmount = 0;
           }
 
           // Create invoice data
           const invoiceData = {
-            invoiceNumber: invoice.invoiceNumber,
+            invoiceNumber: String(invoice.invoiceNumber).trim(),
             clientId: client.id,
             invoiceDate: invoiceDate,
-            totalAmount: parseFloat(String(invoice.totalAmount)),
+            totalAmount: totalAmount,
             currency: invoice.currency || client.currency || "EGP",
             exchangeRate: invoice.exchangeRate || 1,
             extraDiscount: invoice.extraDiscount || 0,

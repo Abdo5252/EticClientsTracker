@@ -24,15 +24,38 @@ export function useClients() {
     queryFn: async () => {
       console.log('Loading clients from local JSON file...');
       try {
-        // Format the data from the JSON file
-        const formattedClients = clientsData.map((client, index) => ({
-          id: index + 1,
-          clientCode: String(client.CODE || "").trim(),
-          clientName: String(client['CUSTOMER NAME'] || "").trim(),
-          salesRepName: "", // Default empty string as salesRepName is not in the JSON
-          balance: 0, // Default balance
-          currency: "EGP" // Default currency
-        }));
+        if (!clientsData || !Array.isArray(clientsData) || clientsData.length === 0) {
+          console.error('Invalid or empty clients data:', clientsData);
+          return [];
+        }
+        
+        // Logging sample client data for debugging
+        if (clientsData.length > 0) {
+          console.log('Client data sample:', clientsData[0]);
+          console.log('Available fields:', Object.keys(clientsData[0]));
+        }
+        
+        // Format the data from the JSON file with more flexible field matching
+        const formattedClients = clientsData.map((client, index) => {
+          // Helper function for field extraction with multiple possible field names
+          const getField = (fieldOptions: string[], defaultValue: string = ""): string => {
+            for (const field of fieldOptions) {
+              if (client[field] !== undefined && client[field] !== null) {
+                return String(client[field]).trim();
+              }
+            }
+            return defaultValue;
+          };
+          
+          return {
+            id: index + 1,
+            clientCode: getField(['CODE', 'Client Code', 'ClientCode', 'Customer Code', 'CustomerCode', 'رمز العميل', 'كود']),
+            clientName: getField(['CUSTOMER NAME', 'Customer Name', 'CustomerName', 'Client Name', 'ClientName', 'اسم العميل', 'الاسم']),
+            salesRepName: getField(['SALES REP', 'Sales Rep', 'SalesRep', 'مندوب المبيعات', 'مندوب'], ""),
+            balance: 0, // Default balance
+            currency: getField(['Currency', 'عملة'], "EGP") // Default currency
+          };
+        }).filter(client => client.clientCode || client.clientName); // Filter out completely empty records
 
         console.log('Client data loaded:', formattedClients.length ? `${formattedClients.length} clients` : 'empty array');
         return formattedClients;

@@ -57,15 +57,16 @@ export function useInvoices() {
         const availableKeys = Object.keys(row);
         console.log("Available keys in row:", availableKeys);
         
-        // Find fields by flexible matching
+        // Enhanced field finder function with more flexible matching
         const findField = (possibleNames: string[]) => {
+          // Try direct matches first
           for (const name of possibleNames) {
-            // Try exact match
+            // Exact match
             if (row[name] !== undefined) {
               return row[name];
             }
             
-            // Try case-insensitive match
+            // Case-insensitive exact match
             const caseInsensitiveKey = Object.keys(row).find(k => 
               k.toLowerCase() === name.toLowerCase()
             );
@@ -73,10 +74,61 @@ export function useInvoices() {
               return row[caseInsensitiveKey];
             }
           }
+          
+          // Try partial matches
+          for (const name of possibleNames) {
+            // Find keys that contain the field name
+            const partialMatches = Object.keys(row).filter(k => 
+              k.toLowerCase().includes(name.toLowerCase())
+            );
+            
+            if (partialMatches.length > 0) {
+              return row[partialMatches[0]];
+            }
+          }
+          
+          // Try alternative naming patterns (common in Arabic Excel files)
+          const alternativeNames = new Map([
+            ['Document Type', ['نوع المستند', 'النوع', 'Type']],
+            ['Document Number', ['رقم المستند', 'رقم الفاتورة', 'Invoice Number', 'رقم']],
+            ['Document Date', ['تاريخ المستند', 'تاريخ الفاتورة', 'Invoice Date', 'تاريخ']],
+            ['Customer Code', ['رمز العميل', 'كود العميل', 'Customer ID', 'عميل']],
+            ['Total Amount', ['المبلغ الإجمالي', 'إجمالي المبلغ', 'Amount', 'المبلغ', 'قيمة']]
+          ]);
+          
+          const mainField = possibleNames[0];
+          const altNames = alternativeNames.get(mainField);
+          
+          if (altNames) {
+            for (const altName of altNames) {
+              // Exact match
+              if (row[altName] !== undefined) {
+                return row[altName];
+              }
+              
+              // Case-insensitive match
+              const altCaseKey = Object.keys(row).find(k => 
+                k.toLowerCase() === altName.toLowerCase()
+              );
+              if (altCaseKey) {
+                return row[altCaseKey];
+              }
+              
+              // Partial match
+              const altPartialMatches = Object.keys(row).filter(k => 
+                k.toLowerCase().includes(altName.toLowerCase())
+              );
+              
+              if (altPartialMatches.length > 0) {
+                return row[altPartialMatches[0]];
+              }
+            }
+          }
+          
           return null;
         };
         
-        // Get document type and number
+        // Get all necessary fields with enhanced matching
         const documentType = findField(['Document Type']);
         const documentNumber = findField(['Document Number']);
         const documentDate = findField(['Document Date']);
@@ -86,6 +138,14 @@ export function useInvoices() {
         const exchangeRateValue = findField(['Exchange Rate']);
         const extraDiscountValue = findField(['Extra Discount']);
         const activityCodeValue = findField(['Activity Code']);
+        
+        console.log("Extracted fields:", {
+          documentType,
+          documentNumber,
+          documentDate,
+          customerCode,
+          totalAmount
+        });
         
         return {
           documentType,
