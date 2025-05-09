@@ -53,17 +53,50 @@ export function useInvoices() {
       const mappedData = data.map(row => {
         console.log("Processing row:", row);
         
+        // Get all available keys for debugging
+        const availableKeys = Object.keys(row);
+        console.log("Available keys in row:", availableKeys);
+        
+        // Find fields by flexible matching
+        const findField = (possibleNames: string[]) => {
+          for (const name of possibleNames) {
+            // Try exact match
+            if (row[name] !== undefined) {
+              return row[name];
+            }
+            
+            // Try case-insensitive match
+            const caseInsensitiveKey = Object.keys(row).find(k => 
+              k.toLowerCase() === name.toLowerCase()
+            );
+            if (caseInsensitiveKey) {
+              return row[caseInsensitiveKey];
+            }
+          }
+          return null;
+        };
+        
+        // Get document type and number
+        const documentType = findField(['Document Type']);
+        const documentNumber = findField(['Document Number']);
+        const documentDate = findField(['Document Date']);
+        const customerCode = findField(['Customer Code']);
+        const totalAmount = findField(['Total Amount']);
+        const currencyCode = findField(['Currency Code', 'Currency']);
+        const exchangeRateValue = findField(['Exchange Rate']);
+        const extraDiscountValue = findField(['Extra Discount']);
+        const activityCodeValue = findField(['Activity Code']);
+        
         return {
-          // Handle exact Excel column names as seen in the screenshot
-          documentType: row['Document Type'],
-          invoiceNumber: row['Document Number'],
-          invoiceDate: row['Document Date'],
-          clientCode: row['Customer Code'],
-          currency: row['Currency Code'],
-          exchangeRate: row['Exchange Rate'] ? parseFloat(row['Exchange Rate']) : 1,
-          extraDiscount: row['Extra Discount'] ? parseFloat(row['Extra Discount']) : 0,
-          activityCode: row['Activity Code'] || null,
-          totalAmount: parseFloat(String(row['Total Amount']).replace(/,/g, '')) || 0
+          documentType,
+          invoiceNumber: documentNumber,
+          invoiceDate: documentDate,
+          clientCode: customerCode,
+          currency: currencyCode || 'EGP',
+          exchangeRate: exchangeRateValue ? parseFloat(String(exchangeRateValue)) : 1,
+          extraDiscount: extraDiscountValue ? parseFloat(String(extraDiscountValue)) : 0,
+          activityCode: activityCodeValue || null,
+          totalAmount: totalAmount ? parseFloat(String(totalAmount).replace(/,/g, '')) : 0
         };
       });
 

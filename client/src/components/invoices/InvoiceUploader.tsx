@@ -135,13 +135,34 @@ export function InvoiceUploader({ onUpload, isUploading }: InvoiceUploaderProps)
 
       const firstRow = data[0];
       console.log("First row fields:", Object.keys(firstRow));
+      
+      // Debug output to see available fields in the Excel
+      console.log("Sample parsed row:", firstRow);
+      console.log("Available keys in the first record:", Object.keys(firstRow));
 
-      const missingFields = requiredFields.filter(field => 
-        !Object.keys(firstRow).some(key => 
-          key === field.excel || 
+      // More flexible field matching to handle case differences and variations
+      const missingFields = requiredFields.filter(field => {
+        // Try exact match
+        if (Object.keys(firstRow).includes(field.excel)) {
+          return false;
+        }
+        
+        // Try case-insensitive match
+        const caseInsensitiveMatch = Object.keys(firstRow).some(key => 
           key.toLowerCase() === field.excel.toLowerCase()
-        )
-      );
+        );
+        
+        if (caseInsensitiveMatch) {
+          return false;
+        }
+        
+        // Try partial match (field name might be part of a longer field name)
+        const partialMatch = Object.keys(firstRow).some(key => 
+          key.toLowerCase().includes(field.excel.toLowerCase())
+        );
+        
+        return !partialMatch;
+      });
 
       if (missingFields.length > 0) {
         throw new Error(`الحقول المطلوبة غير موجودة: ${missingFields.map(f => f.excel).join(', ')}`);
