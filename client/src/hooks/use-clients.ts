@@ -1,5 +1,6 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient } from "@/lib/queryClient";
+import clientsData from '../../../clients-data.json';
 
 type Client = {
   id: number;
@@ -18,116 +19,75 @@ type ClientFormData = {
 };
 
 export function useClients() {
-  const { data: clients, isLoading, error } = useQuery({
-    queryKey: ['/api/clients'],
+  const { data: clients, isLoading } = useQuery({
+    queryKey: ['clients-data'],
     queryFn: async () => {
-      console.log('Fetching clients from API...');
+      console.log('Loading clients from local JSON file...');
       try {
-        const response = await fetch('/api/clients', {
-          credentials: 'include', // Include cookies for authentication
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        });
+        // Format the data from the JSON file
+        const formattedClients = clientsData.map((client, index) => ({
+          id: index + 1,
+          clientCode: String(client.CODE || "").trim(),
+          clientName: String(client['CUSTOMER NAME'] || "").trim(),
+          salesRepName: "", // Default empty string as salesRepName is not in the JSON
+          balance: 0, // Default balance
+          currency: "EGP" // Default currency
+        }));
 
-        if (!response.ok) {
-          console.error('Failed to fetch clients', response.status, response.statusText);
-          throw new Error(`Failed to fetch clients: ${response.status} ${response.statusText}`);
-        }
-
-        const data = await response.json();
-        console.log('Client data received:', data.length ? `${data.length} clients` : 'empty array', data);
-        return data;
+        console.log('Client data loaded:', formattedClients.length ? `${formattedClients.length} clients` : 'empty array');
+        return formattedClients;
       } catch (err) {
-        console.error('Client fetch error:', err);
+        console.error('Client load error:', err);
         throw err;
       }
     },
     retry: 2,
-    refetchOnWindowFocus: true
+    refetchOnWindowFocus: false // We don't need to refetch since the JSON file doesn't change during runtime
   });
 
+  // These mutations are no longer making actual API calls, they're just updating the in-memory state
+  // In a real implementation, you might want to replace these with local state management
   const addClient = useMutation({
     mutationFn: async (clientData: ClientFormData) => {
-      const response = await fetch('/api/clients', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(clientData),
-        credentials: 'include' // Include cookies for authentication
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to add client');
-      }
-
-      return response.json();
+      console.log('Adding client locally:', clientData);
+      return { id: (clients?.length || 0) + 1, ...clientData, balance: 0 };
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/clients'] });
+    onSuccess: (newClient) => {
+      queryClient.setQueryData(['clients-data'], (old: any) => [...(old || []), newClient]);
     },
   });
 
   const updateClient = useMutation({
     mutationFn: async ({ id, data }: { id: number; data: Partial<ClientFormData> }) => {
-      const response = await fetch(`/api/clients/${id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-        credentials: 'include' // Include cookies for authentication
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to update client');
-      }
-
-      return response.json();
+      console.log('Updating client locally:', id, data);
+      return { id, ...data };
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/clients'] });
+    onSuccess: (updatedClient) => {
+      queryClient.setQueryData(['clients-data'], (old: any) => 
+        old ? old.map((client: Client) => client.id === updatedClient.id ? { ...client, ...updatedClient } : client) : []
+      );
     },
   });
 
   const uploadClients = useMutation({
     mutationFn: async (data: any[]) => {
-      const response = await fetch('/api/clients/upload', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ data }),
-        credentials: 'include' // Include cookies for authentication
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to upload clients');
-      }
-
-      return response.json();
+      console.log('Uploading clients locally:', data);
+      return data;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/clients'] });
+    onSuccess: (newClients) => {
+      queryClient.setQueryData(['clients-data'], (old: any) => [...(old || []), ...newClients]);
     },
   });
 
   const deleteClient = useMutation({
     mutationFn: async (id: number) => {
-      const response = await fetch(`/api/clients/${id}`, {
-        method: 'DELETE',
-        credentials: 'include' // Include cookies for authentication
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to delete client');
-      }
-
-      return response.json();
+      console.log('Deleting client locally:', id);
+      return id;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/clients'] });
+    onSuccess: (id) => {
+      queryClient.setQueryData(['clients-data'], (old: any) => 
+        old ? old.filter((client: Client) => client.id !== id) : []
+      );
     },
   });
 
