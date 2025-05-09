@@ -11,7 +11,8 @@
     "db:push": "drizzle-kit push",
     "import-clients": "tsx server/import-clients.ts",
     "check-clients": "tsx server/check-clients.ts",
-    "add-test-clients": "tsx server/add-test-clients.ts"
+    "add-test-clients": "tsx server/add-test-clients.ts",
+    "import-clients-json": "tsx server/import-clients-json.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
