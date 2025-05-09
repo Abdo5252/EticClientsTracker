@@ -63,9 +63,9 @@ async function importClientsFromJson() {
         }
 
         // Create client
-        await storage.createClient(validatedData);
+        const newClient = await storage.createClient(validatedData);
         results.success++;
-        console.log(`Successfully added client: ${clientData.clientName}`);
+        console.log(`Successfully added client: ${clientData.clientName}`, newClient);
       } catch (error: any) {
         results.failed++;
         results.errors.push(`Error processing client: ${error.message}`);

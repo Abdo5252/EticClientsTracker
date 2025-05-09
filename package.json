@@ -12,7 +12,8 @@
     "import-clients": "tsx server/import-clients.ts",
     "check-clients": "tsx server/check-clients.ts",
     "add-test-clients": "tsx server/add-test-clients.ts",
-    "import-clients-json": "tsx server/import-clients-json.ts"
+    "import-clients-json": "tsx server/import-clients-json.ts",
+    "debug-clients": "tsx server/debug-clients.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

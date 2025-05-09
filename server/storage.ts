@@ -1,3 +1,8 @@
+` tags.
+
+```python
+# Applying database test function to the MemStorage class.
+<replit_final_file>
 import { 
   users, type User, type InsertUser,
   clients, type Client, type InsertClient,
@@ -23,7 +28,7 @@ export interface IStorage {
   createClient(client: InsertClient): Promise<Client>;
   updateClient(id: number, client: Partial<Client>): Promise<Client | undefined>;
   deleteClient(id: number): Promise<boolean>;
-  
+
   // Invoice operations
   getInvoice(id: number): Promise<Invoice | undefined>;
   getInvoiceByNumber(invoiceNumber: string): Promise<Invoice | undefined>;
@@ -32,7 +37,7 @@ export interface IStorage {
   createInvoice(invoice: InsertInvoice): Promise<Invoice>;
   updateInvoice(id: number, invoice: Partial<Invoice>): Promise<Invoice | undefined>;
   deleteInvoice(id: number): Promise<boolean>;
-  
+
   // Payment operations
   getPayment(id: number): Promise<Payment | undefined>;
   getPaymentsByClientId(clientId: number): Promise<Payment[]>;
@@ -40,22 +45,22 @@ export interface IStorage {
   createPayment(payment: InsertPayment): Promise<Payment>;
   updatePayment(id: number, payment: Partial<Payment>): Promise<Payment | undefined>;
   deletePayment(id: number): Promise<boolean>;
-  
+
   // Activity operations
   getActivity(id: number): Promise<Activity | undefined>;
   getActivities(limit?: number): Promise<Activity[]>;
   createActivity(activity: InsertActivity): Promise<Activity>;
-  
+
   // Settings operations
   getSetting(key: string): Promise<Setting | undefined>;
   getSettings(): Promise<Setting[]>;
   updateSetting(key: string, value: string): Promise<Setting | undefined>;
   createSetting(setting: InsertSetting): Promise<Setting>;
-  
+
   // Dashboard operations
   getDashboardData(): Promise<any>;
   getOverdueClients(): Promise<ClientWithBalance[]>;
-  
+
   // Report operations
   getClientReport(clientId: number, startDate?: Date, endDate?: Date): Promise<any>;
   getMonthlyReport(startDate?: Date, endDate?: Date): Promise<any>;
@@ -89,7 +94,7 @@ export class MemStorage implements IStorage {
     this.currentPaymentId = 1;
     this.currentActivityId = 1;
     this.currentSettingId = 1;
-    
+
     // Initialize with a default admin user (admin/admin)
     this.createUser({
       username: 'admin',
@@ -97,7 +102,7 @@ export class MemStorage implements IStorage {
       displayName: 'مدير النظام',
       role: 'admin'
     });
-    
+
     // Initialize with a plain text user (user/password)
     this.createPlainUser();
   }
@@ -119,7 +124,7 @@ export class MemStorage implements IStorage {
     this.users.set(id, user);
     return user;
   }
-  
+
   // Helper to create a test user with plaintext password for debugging
   private async createPlainUser() {
     // Hash the plaintext password "password"
@@ -132,7 +137,7 @@ export class MemStorage implements IStorage {
       displayName: 'Test User',
       role: 'user'
     };
-    
+
     this.users.set(id, user);
     console.log(`Created test user: user/password`);
     return user;
@@ -142,22 +147,22 @@ export class MemStorage implements IStorage {
   async getClient(id: number): Promise<Client | undefined> {
     return this.clients.get(id);
   }
-  
+
   async getClientByCode(code: string): Promise<Client | undefined> {
     return Array.from(this.clients.values()).find(
       (client) => client.clientCode === code
     );
   }
-  
+
   async getClients(): Promise<Client[]> {
     return Array.from(this.clients.values());
   }
-  
+
   async createClient(client: InsertClient): Promise<Client> {
     const id = this.currentClientId++;
     const newClient: Client = { ...client, id, balance: 0 };
     this.clients.set(id, newClient);
-    
+
     // Log activity
     await this.createActivity({
       activityType: 'client_created',
@@ -165,17 +170,17 @@ export class MemStorage implements IStorage {
       entityId: id,
       entityType: 'client'
     });
-    
+
     return newClient;
   }
-  
+
   async updateClient(id: number, clientData: Partial<Client>): Promise<Client | undefined> {
     const client = this.clients.get(id);
     if (!client) return undefined;
-    
+
     const updatedClient = { ...client, ...clientData };
     this.clients.set(id, updatedClient);
-    
+
     // Log activity
     await this.createActivity({
       activityType: 'client_updated',
@@ -183,27 +188,27 @@ export class MemStorage implements IStorage {
       entityId: id,
       entityType: 'client'
     });
-    
+
     return updatedClient;
   }
-  
+
   async deleteClient(id: number): Promise<boolean> {
     const client = this.clients.get(id);
     if (!client) return false;
-    
+
     // Check if client has invoices or payments
     const hasInvoices = Array.from(this.invoices.values()).some(
       invoice => invoice.clientId === id
     );
-    
+
     const hasPayments = Array.from(this.payments.values()).some(
       payment => payment.clientId === id
     );
-    
+
     if (hasInvoices || hasPayments) return false;
-    
+
     const deleted = this.clients.delete(id);
-    
+
     if (deleted) {
       // Log activity
       await this.createActivity({
@@ -213,7 +218,7 @@ export class MemStorage implements IStorage {
         entityType: 'client'
       });
     }
-    
+
     return deleted;
   }
 
@@ -221,23 +226,23 @@ export class MemStorage implements IStorage {
   async getInvoice(id: number): Promise<Invoice | undefined> {
     return this.invoices.get(id);
   }
-  
+
   async getInvoiceByNumber(invoiceNumber: string): Promise<Invoice | undefined> {
     return Array.from(this.invoices.values()).find(
       invoice => invoice.invoiceNumber === invoiceNumber
     );
   }
-  
+
   async getInvoicesByClientId(clientId: number): Promise<Invoice[]> {
     return Array.from(this.invoices.values()).filter(
       invoice => invoice.clientId === clientId
     );
   }
-  
+
   async getAllInvoices(): Promise<Invoice[]> {
     return Array.from(this.invoices.values());
   }
-  
+
   async createInvoice(invoice: InsertInvoice): Promise<Invoice> {
     const id = this.currentInvoiceId++;
     const newInvoice: Invoice = { 
@@ -247,14 +252,14 @@ export class MemStorage implements IStorage {
       status: 'open'
     };
     this.invoices.set(id, newInvoice);
-    
+
     // Update client balance
     const client = this.clients.get(newInvoice.clientId);
     if (client) {
       client.balance += newInvoice.totalAmount;
       this.clients.set(client.id, client);
     }
-    
+
     // Log activity
     await this.createActivity({
       activityType: 'invoice_created',
@@ -262,23 +267,23 @@ export class MemStorage implements IStorage {
       entityId: id,
       entityType: 'invoice'
     });
-    
+
     return newInvoice;
   }
-  
+
   async updateInvoice(id: number, invoiceData: Partial<Invoice>): Promise<Invoice | undefined> {
     const invoice = this.invoices.get(id);
     if (!invoice) return undefined;
-    
+
     // Calculate balance difference if amount changed
     let balanceDiff = 0;
     if (invoiceData.totalAmount !== undefined && invoice.totalAmount !== invoiceData.totalAmount) {
       balanceDiff = invoiceData.totalAmount - invoice.totalAmount;
     }
-    
+
     const updatedInvoice = { ...invoice, ...invoiceData };
     this.invoices.set(id, updatedInvoice);
-    
+
     // Update client balance if needed
     if (balanceDiff !== 0) {
       const client = this.clients.get(invoice.clientId);
@@ -287,7 +292,7 @@ export class MemStorage implements IStorage {
         this.clients.set(client.id, client);
       }
     }
-    
+
     // Log activity
     await this.createActivity({
       activityType: 'invoice_updated',
@@ -295,23 +300,23 @@ export class MemStorage implements IStorage {
       entityId: id,
       entityType: 'invoice'
     });
-    
+
     return updatedInvoice;
   }
-  
+
   async deleteInvoice(id: number): Promise<boolean> {
     const invoice = this.invoices.get(id);
     if (!invoice) return false;
-    
+
     // Adjust client balance before deleting
     const client = this.clients.get(invoice.clientId);
     if (client) {
       client.balance -= (invoice.totalAmount - invoice.paidAmount);
       this.clients.set(client.id, client);
     }
-    
+
     const deleted = this.invoices.delete(id);
-    
+
     if (deleted) {
       // Log activity
       await this.createActivity({
@@ -321,7 +326,7 @@ export class MemStorage implements IStorage {
         entityType: 'invoice'
       });
     }
-    
+
     return deleted;
   }
 
@@ -329,51 +334,51 @@ export class MemStorage implements IStorage {
   async getPayment(id: number): Promise<Payment | undefined> {
     return this.payments.get(id);
   }
-  
+
   async getPaymentsByClientId(clientId: number): Promise<Payment[]> {
     return Array.from(this.payments.values()).filter(
       payment => payment.clientId === clientId
     );
   }
-  
+
   async getAllPayments(): Promise<Payment[]> {
     return Array.from(this.payments.values());
   }
-  
+
   async createPayment(payment: InsertPayment): Promise<Payment> {
     const id = this.currentPaymentId++;
     const newPayment: Payment = { ...payment, id };
     this.payments.set(id, newPayment);
-    
+
     // Get client's invoices ordered by date (oldest first)
     const clientInvoices = Array.from(this.invoices.values())
       .filter(invoice => invoice.clientId === payment.clientId)
       .filter(invoice => invoice.totalAmount > invoice.paidAmount)
       .sort((a, b) => a.invoiceDate.getTime() - b.invoiceDate.getTime());
-    
+
     // Apply payment to invoices starting from oldest
     let remainingAmount = payment.amount;
     for (const invoice of clientInvoices) {
       if (remainingAmount <= 0) break;
-      
+
       const amountDue = invoice.totalAmount - invoice.paidAmount;
       const amountToApply = Math.min(amountDue, remainingAmount);
-      
+
       // Update invoice
       invoice.paidAmount += amountToApply;
       invoice.status = invoice.paidAmount >= invoice.totalAmount ? 'paid' : 'partial';
       this.invoices.set(invoice.id, invoice);
-      
+
       remainingAmount -= amountToApply;
     }
-    
+
     // Update client balance
     const client = this.clients.get(payment.clientId);
     if (client) {
       client.balance -= payment.amount;
       this.clients.set(client.id, client);
     }
-    
+
     // Log activity
     await this.createActivity({
       activityType: 'payment_created',
@@ -381,23 +386,23 @@ export class MemStorage implements IStorage {
       entityId: id,
       entityType: 'payment'
     });
-    
+
     return newPayment;
   }
-  
+
   async updatePayment(id: number, paymentData: Partial<Payment>): Promise<Payment | undefined> {
     const payment = this.payments.get(id);
     if (!payment) return undefined;
-    
+
     // This is complicated because we need to recalculate how payments are applied to invoices
     // For simplicity, we don't support changing the amount after creation
     if (paymentData.amount !== undefined && payment.amount !== paymentData.amount) {
       throw new Error('Changing payment amount is not supported');
     }
-    
+
     const updatedPayment = { ...payment, ...paymentData };
     this.payments.set(id, updatedPayment);
-    
+
     // Log activity
     await this.createActivity({
       activityType: 'payment_updated',
@@ -405,57 +410,57 @@ export class MemStorage implements IStorage {
       entityId: id,
       entityType: 'payment'
     });
-    
+
     return updatedPayment;
   }
-  
+
   async deletePayment(id: number): Promise<boolean> {
     // Payment deletion is complex because we need to recalculate invoice payments
     // Not recommended for production but implementing for completeness
     const payment = this.payments.get(id);
     if (!payment) return false;
-    
+
     // Restore client balance
     const client = this.clients.get(payment.clientId);
     if (client) {
       client.balance += payment.amount;
       this.clients.set(client.id, client);
     }
-    
+
     // Get all client invoices and reset payments
     const clientInvoices = Array.from(this.invoices.values())
       .filter(invoice => invoice.clientId === payment.clientId);
-    
+
     for (const invoice of clientInvoices) {
       invoice.paidAmount = 0;
       invoice.status = 'open';
       this.invoices.set(invoice.id, invoice);
     }
-    
+
     // Now reapply all payments except the one being deleted
     const clientPayments = Array.from(this.payments.values())
       .filter(p => p.clientId === payment.clientId && p.id !== id)
       .sort((a, b) => a.paymentDate.getTime() - b.paymentDate.getTime());
-    
+
     for (const p of clientPayments) {
       let remainingAmount = p.amount;
       for (const invoice of clientInvoices.sort((a, b) => a.invoiceDate.getTime() - b.invoiceDate.getTime())) {
         if (remainingAmount <= 0) break;
-        
+
         const amountDue = invoice.totalAmount - invoice.paidAmount;
         const amountToApply = Math.min(amountDue, remainingAmount);
-        
+
         // Update invoice
         invoice.paidAmount += amountToApply;
         invoice.status = invoice.paidAmount >= invoice.totalAmount ? 'paid' : 'partial';
         this.invoices.set(invoice.id, invoice);
-        
+
         remainingAmount -= amountToApply;
       }
     }
-    
+
     const deleted = this.payments.delete(id);
-    
+
     if (deleted) {
       // Log activity
       await this.createActivity({
@@ -465,7 +470,7 @@ export class MemStorage implements IStorage {
         entityType: 'payment'
       });
     }
-    
+
     return deleted;
   }
 
@@ -473,14 +478,14 @@ export class MemStorage implements IStorage {
   async getActivity(id: number): Promise<Activity | undefined> {
     return this.activities.get(id);
   }
-  
+
   async getActivities(limit?: number): Promise<Activity[]> {
     const all = Array.from(this.activities.values())
       .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
-    
+
     return limit ? all.slice(0, limit) : all;
   }
-  
+
   async createActivity(activity: InsertActivity): Promise<Activity> {
     const id = this.currentActivityId++;
     const timestamp = new Date();
@@ -493,20 +498,20 @@ export class MemStorage implements IStorage {
   async getSetting(key: string): Promise<Setting | undefined> {
     return this.settings.get(key);
   }
-  
+
   async getSettings(): Promise<Setting[]> {
     return Array.from(this.settings.values());
   }
-  
+
   async updateSetting(key: string, value: string): Promise<Setting | undefined> {
     const setting = this.settings.get(key);
     if (!setting) return undefined;
-    
+
     const updatedSetting = { ...setting, value };
     this.settings.set(key, updatedSetting);
     return updatedSetting;
   }
-  
+
   async createSetting(setting: InsertSetting): Promise<Setting> {
     const id = this.currentSettingId++;
     const newSetting: Setting = { ...setting, id };
@@ -518,46 +523,46 @@ export class MemStorage implements IStorage {
   async getDashboardData(): Promise<any> {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    
+
     const yesterday = new Date(today);
     yesterday.setDate(yesterday.getDate() - 1);
-    
+
     // Get today's invoices
     const todayInvoices = Array.from(this.invoices.values()).filter(
       invoice => new Date(invoice.invoiceDate).setHours(0, 0, 0, 0) === today.getTime()
     );
-    
+
     const yesterdayInvoices = Array.from(this.invoices.values()).filter(
       invoice => new Date(invoice.invoiceDate).setHours(0, 0, 0, 0) === yesterday.getTime()
     );
-    
+
     // Get today's payments
     const todayPayments = Array.from(this.payments.values()).filter(
       payment => new Date(payment.paymentDate).setHours(0, 0, 0, 0) === today.getTime()
     );
-    
+
     const yesterdayPayments = Array.from(this.payments.values()).filter(
       payment => new Date(payment.paymentDate).setHours(0, 0, 0, 0) === yesterday.getTime()
     );
-    
+
     // Calculate totals
     const totalSalesToday = todayInvoices.reduce((sum, invoice) => sum + invoice.totalAmount, 0);
     const totalSalesYesterday = yesterdayInvoices.reduce((sum, invoice) => sum + invoice.totalAmount, 0);
-    
+
     const totalPaymentsToday = todayPayments.reduce((sum, payment) => sum + payment.amount, 0);
     const totalPaymentsYesterday = yesterdayPayments.reduce((sum, payment) => sum + payment.amount, 0);
-    
+
     // Get overdue clients (oversimplified: clients with balance > 0)
     const overdueClients = await this.getOverdueClients();
-    
+
     // Get recent activities
     const recentActivities = await this.getActivities(10);
-    
+
     // Get top clients by balance
     const topClients = Array.from(this.clients.values())
       .sort((a, b) => b.balance - a.balance)
       .slice(0, 5);
-    
+
     return {
       totalSalesToday,
       totalSalesYesterday,
@@ -575,7 +580,7 @@ export class MemStorage implements IStorage {
       topClients
     };
   }
-  
+
   async getOverdueClients(): Promise<ClientWithBalance[]> {
     // In a real system, this would check invoice due dates
     // For simplicity, we'll just return clients with positive balance
@@ -593,7 +598,7 @@ export class MemStorage implements IStorage {
   async getClientReport(clientId: number, startDate?: Date, endDate?: Date): Promise<any> {
     const client = await this.getClient(clientId);
     if (!client) throw new Error('Client not found');
-    
+
     // Get invoices and filter by date if needed
     let clientInvoices = await this.getInvoicesByClientId(clientId);
     if (startDate) {
@@ -606,7 +611,7 @@ export class MemStorage implements IStorage {
         invoice => invoice.invoiceDate <= endDate
       );
     }
-    
+
     // Get payments and filter by date if needed
     let clientPayments = await this.getPaymentsByClientId(clientId);
     if (startDate) {
@@ -619,12 +624,12 @@ export class MemStorage implements IStorage {
         payment => payment.paymentDate <= endDate
       );
     }
-    
+
     // Calculate totals
     const totalSales = clientInvoices.reduce((sum, invoice) => sum + invoice.totalAmount, 0);
     const totalPayments = clientPayments.reduce((sum, payment) => sum + payment.amount, 0);
     const balance = totalSales - totalPayments;
-    
+
     return {
       client,
       invoices: clientInvoices,
@@ -634,11 +639,11 @@ export class MemStorage implements IStorage {
       balance
     };
   }
-  
+
   async getMonthlyReport(startDate?: Date, endDate?: Date): Promise<any> {
     // Get all clients
     const allClients = await this.getClients();
-    
+
     // Filter invoices by date if needed
     let allInvoices = await this.getAllInvoices();
     if (startDate) {
@@ -651,7 +656,7 @@ export class MemStorage implements IStorage {
         invoice => invoice.invoiceDate <= endDate
       );
     }
-    
+
     // Filter payments by date if needed
     let allPayments = await this.getAllPayments();
     if (startDate) {
@@ -664,16 +669,16 @@ export class MemStorage implements IStorage {
         payment => payment.paymentDate <= endDate
       );
     }
-    
+
     // Group invoices and payments by client
     const clientReports = allClients.map(client => {
       const clientInvoices = allInvoices.filter(invoice => invoice.clientId === client.id);
       const clientPayments = allPayments.filter(payment => payment.clientId === client.id);
-      
+
       const totalSales = clientInvoices.reduce((sum, invoice) => sum + invoice.totalAmount, 0);
       const totalPayments = clientPayments.reduce((sum, payment) => sum + payment.amount, 0);
       const balance = client.balance;
-      
+
       return {
         client,
         totalSales,
@@ -681,11 +686,11 @@ export class MemStorage implements IStorage {
         balance
       };
     });
-    
+
     const totalSales = allInvoices.reduce((sum, invoice) => sum + invoice.totalAmount, 0);
     const totalPayments = allPayments.reduce((sum, payment) => sum + payment.amount, 0);
     const totalBalance = allClients.reduce((sum, client) => sum + client.balance, 0);
-    
+
     return {
       clientReports,
       totalSales,
@@ -693,36 +698,36 @@ export class MemStorage implements IStorage {
       totalBalance
     };
   }
-  
+
   async getAgingReport(): Promise<any> {
     const today = new Date();
     const allClients = await this.getClients();
     const allInvoices = await this.getAllInvoices();
-    
+
     // For each client, group unpaid invoices by age
     const agingData = allClients.map(client => {
       const clientInvoices = allInvoices.filter(
         invoice => invoice.clientId === client.id && invoice.status !== 'paid'
       );
-      
+
       // Group by month (simplified)
       const byMonth: Record<number, number> = {};
-      
+
       for (const invoice of clientInvoices) {
         const ageInDays = Math.floor((today.getTime() - invoice.invoiceDate.getTime()) / (1000 * 60 * 60 * 24));
         const ageInMonths = Math.floor(ageInDays / 30);
-        
+
         if (!byMonth[ageInMonths]) byMonth[ageInMonths] = 0;
         byMonth[ageInMonths] += invoice.totalAmount - invoice.paidAmount;
       }
-      
+
       return {
         client,
         aging: byMonth,
         totalDue: clientInvoices.reduce((sum, invoice) => sum + (invoice.totalAmount - invoice.paidAmount), 0)
       };
     }).filter(item => item.totalDue > 0); // Only include clients with outstanding balances
-    
+
     return {
       agingData,
       totalDue: agingData.reduce((sum, data) => sum + data.totalDue, 0)

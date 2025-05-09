@@ -22,18 +22,28 @@ export function useClients() {
     queryKey: ['/api/clients'],
     queryFn: async () => {
       console.log('Fetching clients from API...');
-      const response = await fetch('/api/clients', {
-        credentials: 'include' // Include cookies for authentication
-      });
-      if (!response.ok) {
-        console.error('Failed to fetch clients', response.status, response.statusText);
-        throw new Error('Failed to fetch clients');
+      try {
+        const response = await fetch('/api/clients', {
+          credentials: 'include', // Include cookies for authentication
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+        
+        if (!response.ok) {
+          console.error('Failed to fetch clients', response.status, response.statusText);
+          throw new Error(`Failed to fetch clients: ${response.status} ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        console.log('Client data received:', data.length ? `${data.length} clients` : 'empty array', data);
+        return data;
+      } catch (err) {
+        console.error('Client fetch error:', err);
+        throw err;
       }
-      const data = await response.json();
-      console.log('Client data received:', data);
-      return data;
     },
-    retry: 1,
+    retry: 2,
     refetchOnWindowFocus: true
   });
 
