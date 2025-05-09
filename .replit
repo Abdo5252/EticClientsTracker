@@ -10,7 +10,7 @@ localPort = 5000
 externalPort = 80
 
 [deployment]
-run = ["node", "server/index.js"]
+run = ["sh", "-c", "npm run dev"]
 deploymentTarget = "cloudrun"
 
 [workflows]
