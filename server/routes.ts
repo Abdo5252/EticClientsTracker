@@ -118,9 +118,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Client routes
   app.get("/api/clients", requireAuth, async (req, res) => {
     try {
+      console.log("API: Fetching all clients");
       const clients = await storage.getClients();
+      console.log("API: Found clients:", clients.length);
       res.json(clients);
     } catch (error) {
+      console.error("API: Error fetching clients:", error);
       res.status(500).json({ message: "Server error", error: error instanceof Error ? error.message : "Unknown error" });
     }
   });

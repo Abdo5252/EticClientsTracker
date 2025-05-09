@@ -18,15 +18,21 @@ type ClientFormData = {
 };
 
 export function useClients() {
-  const { data: clients, isLoading } = useQuery({
+  const { data: clients, isLoading, error } = useQuery({
     queryKey: ['/api/clients'],
     queryFn: async () => {
+      console.log('Fetching clients from API...');
       const response = await fetch('/api/clients');
       if (!response.ok) {
+        console.error('Failed to fetch clients', response.status, response.statusText);
         throw new Error('Failed to fetch clients');
       }
-      return response.json();
-    }
+      const data = await response.json();
+      console.log('Client data received:', data);
+      return data;
+    },
+    retry: 1,
+    refetchOnWindowFocus: true
   });
 
   const addClient = useMutation({

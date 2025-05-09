@@ -61,6 +61,9 @@ export default function Clients() {
     };
   }, []);
 
+  // Debug client data
+  console.log("Clients page - Raw clients data:", clients);
+  
   // Filter and sort clients
   const filteredAndSortedClients = clients ? 
     clients
