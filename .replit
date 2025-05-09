@@ -14,7 +14,7 @@ run = ["sh", "-c", "npm run dev"]
 deploymentTarget = "cloudrun"
 
 [workflows]
-runButton = "Start Fresh"
+runButton = "Start With TSX"
 
 [[workflows.workflow]]
 name = "Project"
@@ -42,6 +42,23 @@ mode = "sequential"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "pkill -f \"node|tsx\" || true"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm run dev"
+
+[[workflows.workflow]]
+name = "Start With TSX"
+author = 42481456
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "pkill -f \"node|tsx\" || true"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm install"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
