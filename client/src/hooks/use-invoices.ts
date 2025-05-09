@@ -47,16 +47,30 @@ export function useInvoices() {
 
   const uploadInvoices = useMutation({
     mutationFn: async (data: any[]) => {
+      // Map Excel columns to the expected format
+      const mappedData = data.map(row => ({
+        invoiceNumber: row['Document Number'],
+        clientCode: row['Customer Code'],
+        invoiceDate: row['Document Date'],
+        totalAmount: parseFloat(row['Total Amount']),
+        currency: row['Currency Code'],
+        exchangeRate: row['Exchange Rate'] ? parseFloat(row['Exchange Rate']) : 1,
+        extraDiscount: row['Extra Discount'] ? parseFloat(row['Extra Discount']) : 0,
+        activityCode: row['Activity Code'] || null,
+        documentType: row['Document Type'] || null
+      }));
+
       const response = await fetch('/api/invoices/upload', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ data }),
+        body: JSON.stringify({ data: mappedData }),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to upload invoices');
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to upload invoices');
       }
 
       return response.json();

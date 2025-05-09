@@ -320,8 +320,9 @@ export function InvoiceUploader({ onUpload, isUploading }: InvoiceUploaderProps)
         <h4 className="text-sm font-semibold mb-2">صيغة الملف المطلوبة:</h4>
         <ul className="list-disc list-inside text-sm text-gray-600 space-y-1 mr-4">
           <li>ملف Excel (.xlsx, .xls)</li>
-          <li>يجب أن يحتوي على الأعمدة: رقم الفاتورة، كود العميل، تاريخ الفاتورة، المبلغ الإجمالي</li>
-          <li>تنسيق التاريخ: YYYY-MM-DD</li>
+          <li>يجب أن يحتوي على الأعمدة: Document Type, Document Number, Document Date, Customer Code, Currency Code, Total Amount</li>
+          <li>يمكن إضافة أعمدة: Exchange Rate, Extra Discount, Activity Code</li>
+          <li>تنسيق التاريخ: DD/MM/YYYY أو MM/DD/YYYY</li>
           <li>العملة الافتراضية هي الجنيه المصري إذا لم يتم تحديدها</li>
         </ul>
       </CardFooter>

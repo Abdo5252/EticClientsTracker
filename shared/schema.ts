@@ -84,12 +84,18 @@ export const insertClientSchema = createInsertSchema(clients).pick({
   currency: true,
 });
 
-export const insertInvoiceSchema = createInsertSchema(invoices).pick({
-  invoiceNumber: true,
-  clientId: true,
-  invoiceDate: true,
-  totalAmount: true,
-  currency: true,
+export const insertInvoiceSchema = z.object({
+  invoiceNumber: z.string().min(1),
+  clientId: z.number().int().positive(),
+  invoiceDate: z.date(),
+  totalAmount: z.number().positive(),
+  currency: z.string().min(1).default("EGP"),
+  paidAmount: z.number().default(0),
+  status: z.enum(["open", "partial", "paid"]).default("open"),
+  exchangeRate: z.number().default(1),
+  extraDiscount: z.number().default(0),
+  activityCode: z.string().nullable().optional(),
+  documentType: z.string().nullable().optional(),
 });
 
 export const insertPaymentSchema = createInsertSchema(payments).pick({

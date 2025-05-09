@@ -275,23 +275,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
         errors: [] as string[]
       };
 
+      console.log(`Processing ${invoices.length} invoices from upload`);
+      
       for (const invoice of invoices) {
         try {
-          // Find client by code or name
-          let client;
-          if (invoice.clientCode) {
-            client = await storage.getClientByCode(invoice.clientCode);
-          }
-
-          if (!client && invoice.clientName) {
-            // Find client by name (simplified)
-            const allClients = await storage.getClients();
-            client = allClients.find(c => c.clientName === invoice.clientName);
-          }
-
+          // Find client by code (from Excel file)
+          const clientCode = invoice.clientCode;
+          console.log(`Looking for client with code: ${clientCode}`);
+          
+          let client = await storage.getClientByCode(clientCode);
+          
           if (!client) {
             results.failed++;
-            results.errors.push(`لم يتم العثور على العميل للفاتورة رقم ${invoice.invoiceNumber}`);
+            results.errors.push(`لم يتم العثور على العميل برمز ${clientCode} للفاتورة رقم ${invoice.invoiceNumber}`);
+            console.log(`Client not found for code: ${clientCode}`);
             continue;
           }
 
@@ -300,6 +297,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
           if (existingInvoice) {
             results.failed++;
             results.errors.push(`الفاتورة رقم ${invoice.invoiceNumber} موجودة بالفعل`);
+            console.log(`Invoice ${invoice.invoiceNumber} already exists`);
+            continue;
+          }
+
+          // Parse date properly
+          let invoiceDate;
+          try {
+            // Handle different date formats
+            if (typeof invoice.invoiceDate === 'string') {
+              // Try parsing various formats
+              const dateParts = invoice.invoiceDate.split('/');
+              if (dateParts.length === 3) {
+                // Format: DD/MM/YYYY or MM/DD/YYYY
+                const day = parseInt(dateParts[0]);
+                const month = parseInt(dateParts[1]) - 1; // months are 0-indexed in JS
+                const year = parseInt(dateParts[2]);
+                invoiceDate = new Date(year, month, day);
+              } else {
+                // Try standard date parsing
+                invoiceDate = new Date(invoice.invoiceDate);
+              }
+            } else {
+              // If it's already a Date object or another format
+              invoiceDate = new Date(invoice.invoiceDate);
+            }
+            
+            // Validate that we got a valid date
+            if (isNaN(invoiceDate.getTime())) {
+              throw new Error("Invalid date format");
+            }
+          } catch (dateError) {
+            results.failed++;
+            results.errors.push(`تنسيق تاريخ غير صالح في الفاتورة رقم ${invoice.invoiceNumber}: ${invoice.invoiceDate}`);
+            console.log(`Invalid date format in invoice ${invoice.invoiceNumber}: ${invoice.invoiceDate}`);
             continue;
           }
 
@@ -307,10 +338,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
           const invoiceData = {
             invoiceNumber: invoice.invoiceNumber,
             clientId: client.id,
-            invoiceDate: new Date(invoice.invoiceDate),
-            totalAmount: parseFloat(invoice.totalAmount),
-            currency: invoice.currency || client.currency || "EGP"
+            invoiceDate: invoiceDate,
+            totalAmount: parseFloat(String(invoice.totalAmount)),
+            currency: invoice.currency || client.currency || "EGP",
+            exchangeRate: invoice.exchangeRate || 1,
+            extraDiscount: invoice.extraDiscount || 0,
+            activityCode: invoice.activityCode || null
           };
+
+          console.log(`Prepared invoice data:`, invoiceData);
 
           // Validate invoice data
           const validatedData = insertInvoiceSchema.parse(invoiceData);
@@ -318,18 +354,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
           // Create invoice
           await storage.createInvoice(validatedData);
           results.success++;
+          console.log(`Successfully created invoice ${invoice.invoiceNumber} for client ${client.clientName}`);
         } catch (error) {
           results.failed++;
+          console.error("Error processing invoice:", error);
           if (error instanceof ZodError) {
             results.errors.push(`خطأ في بيانات الفاتورة: ${error.errors.map(e => e.message).join(', ')}`);
           } else {
-            results.errors.push(`خطأ في الفاتورة رقم: ${invoice.invoiceNumber || "غير معروف"}`);
+            results.errors.push(`خطأ في الفاتورة رقم: ${invoice.invoiceNumber || "غير معروف"} - ${error instanceof Error ? error.message : "Unknown error"}`);
           }
         }
       }
 
+      console.log(`Invoice upload results: ${results.success} successful, ${results.failed} failed`);
       res.json(results);
     } catch (error) {
+      console.error("Server error during invoice upload:", error);
       res.status(500).json({ message: "Server error", error: error instanceof Error ? error.message : "Unknown error" });
     }
   });
