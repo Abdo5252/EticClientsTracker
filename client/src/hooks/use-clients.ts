@@ -22,7 +22,9 @@ export function useClients() {
     queryKey: ['/api/clients'],
     queryFn: async () => {
       console.log('Fetching clients from API...');
-      const response = await fetch('/api/clients');
+      const response = await fetch('/api/clients', {
+        credentials: 'include' // Include cookies for authentication
+      });
       if (!response.ok) {
         console.error('Failed to fetch clients', response.status, response.statusText);
         throw new Error('Failed to fetch clients');
@@ -43,6 +45,7 @@ export function useClients() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(clientData),
+        credentials: 'include' // Include cookies for authentication
       });
 
       if (!response.ok) {
@@ -64,6 +67,7 @@ export function useClients() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(data),
+        credentials: 'include' // Include cookies for authentication
       });
 
       if (!response.ok) {
@@ -85,6 +89,7 @@ export function useClients() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ data }),
+        credentials: 'include' // Include cookies for authentication
       });
 
       if (!response.ok) {
@@ -102,6 +107,7 @@ export function useClients() {
     mutationFn: async (id: number) => {
       const response = await fetch(`/api/clients/${id}`, {
         method: 'DELETE',
+        credentials: 'include' // Include cookies for authentication
       });
 
       if (!response.ok) {
