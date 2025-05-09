@@ -1,13 +1,14 @@
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useClients } from "@/hooks/use-clients";
-import { t } from "@/lib/i18n";
+import { z } from "zod";
 import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useClients } from "@/hooks/use-clients";
+import { useToast } from "@/hooks/use-toast";
+import { t } from "@/lib/i18n";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 
 interface ClientFormProps {
   clientId?: number;
@@ -25,11 +26,12 @@ type ClientFormValues = z.infer<typeof clientSchema>;
 
 export function ClientForm({ clientId, onSuccess }: ClientFormProps) {
   const { getClient, createClient, updateClient } = useClients();
+  const { toast } = useToast();
   const isEditing = !!clientId;
-  
+
   // Fetch client data if editing
   const { data: clientData, isLoading: isLoadingClient } = getClient(clientId || 0);
-  
+
   const form = useForm<ClientFormValues>({
     resolver: zodResolver(clientSchema),
     defaultValues: {
@@ -39,7 +41,7 @@ export function ClientForm({ clientId, onSuccess }: ClientFormProps) {
       currency: "EGP"
     }
   });
-  
+
   // Update form with client data when available
   useEffect(() => {
     if (isEditing && clientData) {
@@ -51,27 +53,42 @@ export function ClientForm({ clientId, onSuccess }: ClientFormProps) {
       });
     }
   }, [clientData, form, isEditing]);
-  
+
   const onSubmit = async (values: ClientFormValues) => {
     try {
       if (isEditing && clientId) {
         await updateClient.mutateAsync({ id: clientId, client: values });
+        toast({
+          title: "تم تحديث العميل بنجاح",
+          description: "تم تحديث بيانات العميل",
+          variant: "success"
+        });
       } else {
         await createClient.mutateAsync(values);
+        toast({
+          title: "تمت إضافة العميل بنجاح",
+          description: "تمت إضافة العميل الجديد إلى قاعدة البيانات",
+          variant: "success"
+        });
       }
-      
+
       if (onSuccess) {
         onSuccess();
       }
     } catch (error) {
       console.error("Error saving client:", error);
+      toast({
+        title: "حدث خطأ",
+        description: "فشلت عملية حفظ بيانات العميل. يرجى المحاولة مرة أخرى.",
+        variant: "destructive"
+      });
     }
   };
-  
+
   if (isEditing && isLoadingClient) {
     return <div className="text-center py-4">{t('common.loading')}</div>;
   }
-  
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -92,7 +109,7 @@ export function ClientForm({ clientId, onSuccess }: ClientFormProps) {
             </FormItem>
           )}
         />
-        
+
         <FormField
           control={form.control}
           name="clientName"
@@ -106,7 +123,7 @@ export function ClientForm({ clientId, onSuccess }: ClientFormProps) {
             </FormItem>
           )}
         />
-        
+
         <FormField
           control={form.control}
           name="salesRepName"
@@ -120,7 +137,7 @@ export function ClientForm({ clientId, onSuccess }: ClientFormProps) {
             </FormItem>
           )}
         />
-        
+
         <FormField
           control={form.control}
           name="currency"
@@ -143,7 +160,7 @@ export function ClientForm({ clientId, onSuccess }: ClientFormProps) {
             </FormItem>
           )}
         />
-        
+
         <div className="flex justify-end space-x-2 space-x-reverse pt-4">
           <Button 
             type="button" 

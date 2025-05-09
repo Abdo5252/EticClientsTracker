@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
+import { zod } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useClients } from "@/hooks/use-clients";
 import { usePayments } from "@/hooks/use-payments";
@@ -29,7 +29,7 @@ export function PaymentForm() {
   const { clients, isLoading: isLoadingClients } = useClients();
   const { createPayment } = usePayments();
   const [selectedClient, setSelectedClient] = useState<any>(null);
-  
+
   const form = useForm<PaymentFormValues>({
     resolver: zodResolver(paymentSchema),
     defaultValues: {
@@ -43,23 +43,23 @@ export function PaymentForm() {
       currency: "EGP"
     }
   });
-  
+
   const watchPaymentMethod = form.watch("paymentMethod");
   const watchClientId = form.watch("clientId");
-  
+
   // Update selected client when clientId changes
   useEffect(() => {
     if (clients && watchClientId) {
       const client = clients.find(c => c.id.toString() === watchClientId);
       setSelectedClient(client);
-      
+
       // Update currency to match client's currency
       if (client) {
         form.setValue("currency", client.currency as "EGP" | "USD" | "EUR");
       }
     }
   }, [watchClientId, clients, form]);
-  
+
   const onSubmit = async (values: PaymentFormValues) => {
     try {
       await createPayment.mutateAsync({
@@ -72,7 +72,7 @@ export function PaymentForm() {
         notes: values.notes,
         currency: values.currency
       });
-      
+
       // Reset form after successful submission
       form.reset({
         clientId: "",
@@ -84,13 +84,13 @@ export function PaymentForm() {
         notes: "",
         currency: "EGP"
       });
-      
+
       setSelectedClient(null);
     } catch (error) {
       console.error("Error saving payment:", error);
     }
   };
-  
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-0">
@@ -125,7 +125,7 @@ export function PaymentForm() {
               </FormItem>
             )}
           />
-          
+
           <div>
             <FormField
               control={form.control}
@@ -142,7 +142,7 @@ export function PaymentForm() {
                         {...field} 
                       />
                     </FormControl>
-                    
+
                     <FormField
                       control={form.control}
                       name="currency"
@@ -171,7 +171,7 @@ export function PaymentForm() {
               )}
             />
           </div>
-          
+
           <FormField
             control={form.control}
             name="paymentDate"
@@ -185,7 +185,7 @@ export function PaymentForm() {
               </FormItem>
             )}
           />
-          
+
           <FormField
             control={form.control}
             name="paymentMethod"
@@ -209,7 +209,7 @@ export function PaymentForm() {
               </FormItem>
             )}
           />
-          
+
           {watchPaymentMethod === "check" && (
             <FormField
               control={form.control}
@@ -228,7 +228,7 @@ export function PaymentForm() {
               )}
             />
           )}
-          
+
           {watchPaymentMethod === "transfer" && (
             <FormField
               control={form.control}
@@ -247,7 +247,7 @@ export function PaymentForm() {
               )}
             />
           )}
-          
+
           <div className="md:col-span-2">
             <FormField
               control={form.control}
@@ -268,11 +268,11 @@ export function PaymentForm() {
             />
           </div>
         </div>
-        
+
         {selectedClient && (
           <div className="mt-8 border-t border-gray-200 pt-6">
             <h3 className="text-lg font-semibold mb-4">{t('payments.clientInfo')}</h3>
-            
+
             <div className="bg-gray-50 p-4 rounded-lg">
               <p className="mb-2">
                 <span className="text-gray-600 ml-2">{t('payments.currentBalance')}:</span> 
@@ -287,7 +287,7 @@ export function PaymentForm() {
                   {selectedClient.balance > 0 ? '1 فاتورة' : '0 فواتير'}
                 </span>
               </p>
-              
+
               <div className="mt-4 pt-4 border-t border-gray-200">
                 <p className="text-sm text-gray-600">
                   {t('payments.paymentNote')}
@@ -296,7 +296,7 @@ export function PaymentForm() {
             </div>
           </div>
         )}
-        
+
         <div className="mt-8 flex items-center justify-end space-x-4 space-x-reverse">
           <Button 
             type="button" 
