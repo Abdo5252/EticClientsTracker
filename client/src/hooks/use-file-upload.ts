@@ -1,69 +1,63 @@
-import { useState } from 'react';
 import * as XLSX from 'xlsx';
+import { useState } from 'react';
 
 export function useFileUpload() {
   const [isProcessing, setIsProcessing] = useState(false);
 
-  // Parse Excel file to JSON
-  const parseExcelFile = async (file: File): Promise<any[]> => {
+  const processExcelFile = async (file: File): Promise<any[]> => {
     setIsProcessing(true);
-    
+
     try {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        
-        reader.onload = (event) => {
-          try {
-            const data = event.target?.result;
-            if (!data) {
-              reject(new Error('Failed to read file'));
-              return;
-            }
-            
-            const workbook = XLSX.read(data, { type: 'binary' });
-            const sheetName = workbook.SheetNames[0];
-            const worksheet = workbook.Sheets[sheetName];
-            
-            // Convert Excel sheet to JSON
-            const jsonData = XLSX.utils.sheet_to_json(worksheet);
-            
-            // Map the data to match the expected format based on the Excel structure
-            const mappedData = jsonData.map((row: any) => {
-              return {
-                clientCode: row['CODE'] || row['كود العميل'] || row['Client Code'] || row['clientCode'] || '',
-                clientName: row['CUSTOMER NAME'] || row['اسم العميل'] || row['Client Name'] || row['clientName'] || '',
-                salesRepName: row['SALES REP'] || row['اسم مندوب المبيعات'] || row['Sales Rep Name'] || row['salesRepName'] || '',
-                invoiceNumber: row['رقم الفاتورة'] || row['Invoice Number'] || row['invoiceNumber'] || '',
-                invoiceDate: row['تاريخ الفاتورة'] || row['Invoice Date'] || row['invoiceDate'] || new Date().toISOString().split('T')[0],
-                totalAmount: parseFloat(row['إجمالي المبلغ'] || row['Total Amount'] || row['totalAmount'] || 0),
-                currency: row['العملة'] || row['Currency'] || row['currency'] || 'EGP',
-              };
-            });
-            
-            resolve(mappedData);
-          } catch (error) {
-            reject(error);
-          } finally {
-            setIsProcessing(false);
-          }
-        };
-        
-        reader.onerror = (error) => {
-          reject(error);
-          setIsProcessing(false);
-        };
-        
-        // Read the file
-        reader.readAsBinaryString(file);
+      const data = await file.arrayBuffer();
+      const workbook = XLSX.read(data);
+      const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+
+      // Enable header row detection and raw values
+      const jsonData = XLSX.utils.sheet_to_json(worksheet, {
+        header: 'A',
+        raw: false,
+        defval: ''
       });
+
+      // Skip header row
+      const headerRow = jsonData[0];
+      console.log('Excel header row:', headerRow);
+
+      // Find column indices
+      const codeIndex = Object.keys(headerRow).find(key => 
+        headerRow[key].toString().toUpperCase().includes('CODE'));
+      const nameIndex = Object.keys(headerRow).find(key => 
+        headerRow[key].toString().toUpperCase().includes('CUSTOMER') || 
+        headerRow[key].toString().toUpperCase().includes('NAME'));
+      const salesRepIndex = Object.keys(headerRow).find(key => 
+        headerRow[key].toString().toUpperCase().includes('SALES') || 
+        headerRow[key].toString().toUpperCase().includes('REP'));
+
+      console.log('Column indices:', { codeIndex, nameIndex, salesRepIndex });
+
+      // Process rows (skip header)
+      const processedData = jsonData.slice(1).map(row => {
+        const processedRow: Record<string, string> = {};
+
+        if (codeIndex) processedRow['CODE'] = row[codeIndex]?.toString() || '';
+        if (nameIndex) processedRow['CUSTOMER NAME'] = row[nameIndex]?.toString() || '';
+        if (salesRepIndex) processedRow['SALES REP'] = row[salesRepIndex]?.toString() || '';
+
+        return processedRow;
+      });
+
+      console.log('Processed Excel data:', processedData.slice(0, 3));
+      return processedData;
     } catch (error) {
+      console.error('Error processing Excel file:', error);
+      throw new Error('Failed to process the Excel file');
+    } finally {
       setIsProcessing(false);
-      throw error;
     }
   };
 
   return {
-    parseExcelFile,
-    isProcessing,
+    processExcelFile,
+    isProcessing
   };
 }

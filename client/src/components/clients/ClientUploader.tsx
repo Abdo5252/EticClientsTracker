@@ -14,27 +14,27 @@ export function ClientUploader({ onUpload, isUploading }: ClientUploaderProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { parseExcelFile, isProcessing } = useFileUpload();
   const { toast } = useToast();
-  
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       setFile(e.target.files[0]);
     }
   };
-  
+
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
-    
+
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
       setFile(e.dataTransfer.files[0]);
     }
   };
-  
+
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
   };
-  
+
   const handleUpload = async () => {
     if (!file) {
       toast({
@@ -44,7 +44,7 @@ export function ClientUploader({ onUpload, isUploading }: ClientUploaderProps) {
       });
       return;
     }
-    
+
     // Validate file extension
     const fileExtension = file.name.split('.').pop()?.toLowerCase();
     if (fileExtension !== 'xlsx' && fileExtension !== 'xls') {
@@ -55,15 +55,15 @@ export function ClientUploader({ onUpload, isUploading }: ClientUploaderProps) {
       });
       return;
     }
-    
+
     try {
       toast({
         title: "جاري معالجة الملف",
         description: "يرجى الانتظار...",
       });
-      
+
       const data = await parseExcelFile(file);
-      
+
       if (!data || data.length === 0) {
         toast({
           title: "خطأ في الملف",
@@ -72,23 +72,23 @@ export function ClientUploader({ onUpload, isUploading }: ClientUploaderProps) {
         });
         return;
       }
-      
+
       console.log("Parsed data:", data);
       const result = await onUpload(data);
-      
+
       setFile(null);
-      
+
       // Reset file input
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
-      
+
       toast({
         title: "تم رفع الملف بنجاح",
         description: `تم معالجة ${result.success} سجل بنجاح${result.failed > 0 ? ` و ${result.failed} سجل فشل` : ''}`,
         variant: result.failed > 0 ? "default" : "default",
       });
-      
+
     } catch (error) {
       console.error("File upload error:", error);
       toast({
@@ -98,13 +98,13 @@ export function ClientUploader({ onUpload, isUploading }: ClientUploaderProps) {
       });
     }
   };
-  
+
   const handleFileSelect = () => {
     if (fileInputRef.current) {
       fileInputRef.current.click();
     }
   };
-  
+
   return (
     <div 
       className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center mb-6"
@@ -119,7 +119,7 @@ export function ClientUploader({ onUpload, isUploading }: ClientUploaderProps) {
         <p className="text-sm text-gray-500 mb-4">
           {file ? `${(file.size / 1024).toFixed(2)} KB` : t('clientUpload.dragDrop')}
         </p>
-        
+
         <div className="flex space-x-2 space-x-reverse">
           <input 
             type="file" 
@@ -128,7 +128,7 @@ export function ClientUploader({ onUpload, isUploading }: ClientUploaderProps) {
             accept=".xlsx,.xls"
             className="hidden"
           />
-          
+
           <Button 
             type="button"
             onClick={handleFileSelect}
@@ -138,7 +138,7 @@ export function ClientUploader({ onUpload, isUploading }: ClientUploaderProps) {
             <i className="ri-file-upload-line ml-1"></i>
             <span>{t('invoices.chooseFile')}</span>
           </Button>
-          
+
           {file && (
             <Button 
               type="button"
@@ -157,3 +157,73 @@ export function ClientUploader({ onUpload, isUploading }: ClientUploaderProps) {
     </div>
   );
 }
+```
+
+```typescript
+// use-file-upload.ts
+import { useState } from "react";
+import * as XLSX from 'xlsx';
+
+export const useFileUpload = () => {
+  const [isProcessing, setIsProcessing] = useState(false);
+
+  const parseExcelFile = (file: File): Promise<any[]> => {
+    setIsProcessing(true);
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+
+      reader.onload = (e: any) => {
+        try {
+          const data = new Uint8Array(e.target.result);
+          const workbook = XLSX.read(data, { type: 'array' });
+
+          // Assuming the first sheet is the one we want
+          const sheetName = workbook.SheetNames[0];
+          const worksheet = workbook.Sheets[sheetName];
+
+          const jsonData: any[] = XLSX.utils.sheet_to_json(worksheet);
+
+          // Process the Excel data to map the columns correctly
+          const processedData = processExcelData(jsonData);
+
+          resolve(processedData);
+        } catch (error) {
+          console.error("Error parsing Excel file:", error);
+          reject(error);
+        } finally {
+          setIsProcessing(false);
+        }
+      };
+
+      reader.onerror = (error) => {
+        console.error("Error reading file:", error);
+        setIsProcessing(false);
+        reject(error);
+      };
+
+      reader.readAsArrayBuffer(file);
+    });
+  };
+
+  const processExcelData = (data: any) => {
+    // Map the data to the client schema format
+    return data.map((row: any) => {
+      // Check different possible column name formats
+      const clientCode = row['CODE'] || row['code'] || '';
+      const clientName = row['CUSTOMER NAME'] || row['customer name'] || row['Customer Name'] || '';
+      const salesRepName = row['SALES REP'] || row['sales rep'] || row['Sales Rep'] || '';
+
+      console.log('Processing Excel row:', row);
+
+      return {
+        clientCode: clientCode,
+        clientName: clientName,
+        salesRepName: salesRepName,
+        currency: 'EGP' // Default currency
+      };
+    });
+  };
+
+  return { parseExcelFile, isProcessing };
+};
+```

@@ -47,10 +47,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
         console.log(`User found, checking password for: ${username}`);
         console.log(`User password hash: ${user.password}`);
-        
+
         const isValidPassword = await bcrypt.compare(password, user.password);
         console.log(`Password valid: ${isValidPassword}`);
-        
+
         if (!isValidPassword) {
           return done(null, false, { message: "Invalid username or password" });
         }
@@ -140,13 +140,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/clients", requireAuth, async (req, res) => {
     try {
       const validatedData = insertClientSchema.parse(req.body);
-      
+
       // Check if client code already exists
       const existingClient = await storage.getClientByCode(validatedData.clientCode);
       if (existingClient) {
         return res.status(400).json({ message: "Client code already exists" });
       }
-      
+
       const client = await storage.createClient(validatedData);
       res.status(201).json(client);
     } catch (error) {
@@ -164,7 +164,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!existingClient) {
         return res.status(404).json({ message: "Client not found" });
       }
-      
+
       const validatedData = insertClientSchema.partial().parse(req.body);
       const updatedClient = await storage.updateClient(id, validatedData);
       res.json(updatedClient);
@@ -195,16 +195,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!req.body || !req.body.data || !Array.isArray(req.body.data)) {
         return res.status(400).json({ message: "Invalid data format" });
       }
-      
+
       const clients = req.body.data;
       const results = {
         success: 0,
         failed: 0,
         errors: [] as string[]
       };
-      
+
       console.log('Received client data:', clients);
-      
+
       for (const client of clients) {
         try {
           // Extract client data
@@ -214,18 +214,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
             salesRepName: String(client.salesRepName || client['SALES REP'] || "").trim(),
             currency: client.currency || "EGP"
           };
-          
+
           console.log('Processing client:', clientData);
-          
+
           // Skip empty rows
           if (!clientData.clientCode && !clientData.clientName) {
             console.log('Skipping empty row');
             continue;
           }
-          
+
           // Validate client data
           const validatedData = insertClientSchema.parse(clientData);
-          
+
           // Check if client code already exists
           const existingClient = await storage.getClientByCode(validatedData.clientCode);
           if (existingClient) {
@@ -233,7 +233,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             results.errors.push(`العميل برمز ${validatedData.clientCode} موجود بالفعل`);
             continue;
           }
-          
+
           // Create client
           await storage.createClient(validatedData);
           results.success++;
@@ -246,7 +246,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           }
         }
       }
-      
+
       res.json(results);
     } catch (error) {
       res.status(500).json({ message: "Server error", error: error instanceof Error ? error.message : "Unknown error" });
@@ -287,19 +287,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/invoices", requireAuth, async (req, res) => {
     try {
       const validatedData = insertInvoiceSchema.parse(req.body);
-      
+
       // Check if invoice number already exists
       const existingInvoice = await storage.getInvoiceByNumber(validatedData.invoiceNumber);
       if (existingInvoice) {
         return res.status(400).json({ message: "Invoice number already exists" });
       }
-      
+
       // Check if client exists
       const client = await storage.getClient(validatedData.clientId);
       if (!client) {
         return res.status(400).json({ message: "Client not found" });
       }
-      
+
       const invoice = await storage.createInvoice(validatedData);
       res.status(201).json(invoice);
     } catch (error) {
@@ -316,7 +316,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!req.body || !req.body.data || !Array.isArray(req.body.data)) {
         return res.status(400).json({ message: "Invalid data format" });
       }
-      
+
       const invoices = req.body.data;
       const results = {
         success: 0,
@@ -324,7 +324,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         modified: 0,
         errors: [] as string[]
       };
-      
+
       for (const invoice of invoices) {
         try {
           // Find client by code or name
@@ -332,19 +332,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
           if (invoice.clientCode) {
             client = await storage.getClientByCode(invoice.clientCode);
           }
-          
+
           if (!client && invoice.clientName) {
             // Find client by name (simplified)
             const allClients = await storage.getClients();
             client = allClients.find(c => c.clientName === invoice.clientName);
           }
-          
+
           if (!client) {
             results.failed++;
             results.errors.push(`لم يتم العثور على العميل للفاتورة رقم ${invoice.invoiceNumber}`);
             continue;
           }
-          
+
           // Check if invoice already exists
           const existingInvoice = await storage.getInvoiceByNumber(invoice.invoiceNumber);
           if (existingInvoice) {
@@ -352,7 +352,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             results.errors.push(`الفاتورة رقم ${invoice.invoiceNumber} موجودة بالفعل`);
             continue;
           }
-          
+
           // Create invoice data
           const invoiceData = {
             invoiceNumber: invoice.invoiceNumber,
@@ -361,10 +361,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
             totalAmount: parseFloat(invoice.totalAmount),
             currency: invoice.currency || client.currency || "EGP"
           };
-          
+
           // Validate invoice data
           const validatedData = insertInvoiceSchema.parse(invoiceData);
-          
+
           // Create invoice
           await storage.createInvoice(validatedData);
           results.success++;
@@ -377,7 +377,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           }
         }
       }
-      
+
       res.json(results);
     } catch (error) {
       res.status(500).json({ message: "Server error", error: error instanceof Error ? error.message : "Unknown error" });
@@ -418,13 +418,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/payments", requireAuth, async (req, res) => {
     try {
       const validatedData = insertPaymentSchema.parse(req.body);
-      
+
       // Check if client exists
       const client = await storage.getClient(validatedData.clientId);
       if (!client) {
         return res.status(400).json({ message: "Client not found" });
       }
-      
+
       const payment = await storage.createPayment(validatedData);
       res.status(201).json(payment);
     } catch (error) {
@@ -471,7 +471,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/settings", requireAuth, async (req, res) => {
     try {
       const validatedData = insertSettingSchema.parse(req.body);
-      
+
       // Check if setting already exists
       const existingSetting = await storage.getSetting(validatedData.key);
       if (existingSetting) {
@@ -479,7 +479,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const updatedSetting = await storage.updateSetting(validatedData.key, validatedData.value);
         return res.json(updatedSetting);
       }
-      
+
       // Create new setting
       const setting = await storage.createSetting(validatedData);
       res.status(201).json(setting);
@@ -505,19 +505,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/reports/client/:id", requireAuth, async (req, res) => {
     try {
       const clientId = parseInt(req.params.id);
-      
+
       // Parse start and end dates if provided
       let startDate = undefined;
       let endDate = undefined;
-      
+
       if (req.query.startDate) {
         startDate = new Date(req.query.startDate as string);
       }
-      
+
       if (req.query.endDate) {
         endDate = new Date(req.query.endDate as string);
       }
-      
+
       const report = await storage.getClientReport(clientId, startDate, endDate);
       res.json(report);
     } catch (error) {
@@ -530,15 +530,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Parse start and end dates if provided
       let startDate = undefined;
       let endDate = undefined;
-      
+
       if (req.query.startDate) {
         startDate = new Date(req.query.startDate as string);
       }
-      
+
       if (req.query.endDate) {
         endDate = new Date(req.query.endDate as string);
       }
-      
+
       const report = await storage.getMonthlyReport(startDate, endDate);
       res.json(report);
     } catch (error) {
