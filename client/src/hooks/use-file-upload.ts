@@ -11,6 +11,10 @@ export function useFileUpload() {
       const workbook = XLSX.read(data, { type: 'array', cellDates: true });
       const worksheet = workbook.Sheets[workbook.SheetNames[0]];
 
+      // Log the worksheet data for debugging
+      console.log("Excel workbook sheets:", workbook.SheetNames);
+      console.log("Using worksheet:", workbook.SheetNames[0]);
+
       // Get header row to verify columns exist
       const range = XLSX.utils.decode_range(worksheet['!ref'] || 'A1:Z1');
       const headers: string[] = [];
@@ -20,25 +24,26 @@ export function useFileUpload() {
         headers.push(cell?.v || '');
       }
 
-      console.log("Excel headers:", headers);
+      console.log("Excel headers found:", headers);
 
-      // Parse the sheet with proper options
+      // Parse the sheet with proper options - preserving original headers
       const jsonData = XLSX.utils.sheet_to_json(worksheet, { 
         raw: false,
         dateNF: 'yyyy-mm-dd',
         defval: '',
-        header: headers
+        blankrows: false
       });
 
       // Print some debug info
       if (jsonData.length > 0) {
         console.log("Sample parsed row:", jsonData[0]);
+        console.log("Available keys in the first record:", Object.keys(jsonData[0]));
       }
 
       return jsonData;
     } catch (error) {
       console.error('Error parsing Excel file:', error);
-      throw new Error('فشل في قراءة ملف Excel');
+      throw new Error('فشل في قراءة ملف Excel: ' + (error instanceof Error ? error.message : String(error)));
     } finally {
       setIsProcessing(false);
     }

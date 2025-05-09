@@ -47,18 +47,27 @@ export function useInvoices() {
 
   const uploadInvoices = useMutation({
     mutationFn: async (data: any[]) => {
-      // Map Excel columns to the expected format
-      const mappedData = data.map(row => ({
-        invoiceNumber: row['Document Number'],
-        clientCode: row['Customer Code'],
-        invoiceDate: row['Document Date'],
-        totalAmount: parseFloat(row['Total Amount']),
-        currency: row['Currency Code'],
-        exchangeRate: row['Exchange Rate'] ? parseFloat(row['Exchange Rate']) : 1,
-        extraDiscount: row['Extra Discount'] ? parseFloat(row['Extra Discount']) : 0,
-        activityCode: row['Activity Code'] || null,
-        documentType: row['Document Type'] || null
-      }));
+      console.log("Raw data from Excel:", data);
+      
+      // Map Excel columns based on the exact format from the image
+      const mappedData = data.map(row => {
+        console.log("Processing row:", row);
+        
+        return {
+          // Handle exact Excel column names as seen in the screenshot
+          documentType: row['Document Type'],
+          invoiceNumber: row['Document Number'],
+          invoiceDate: row['Document Date'],
+          clientCode: row['Customer Code'],
+          currency: row['Currency Code'],
+          exchangeRate: row['Exchange Rate'] ? parseFloat(row['Exchange Rate']) : 1,
+          extraDiscount: row['Extra Discount'] ? parseFloat(row['Extra Discount']) : 0,
+          activityCode: row['Activity Code'] || null,
+          totalAmount: parseFloat(String(row['Total Amount']).replace(/,/g, '')) || 0
+        };
+      });
+
+      console.log("Mapped data:", mappedData);
 
       const response = await fetch('/api/invoices/upload', {
         method: 'POST',

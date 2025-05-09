@@ -30,15 +30,15 @@ export function InvoiceUploader({ onUpload, isUploading }: InvoiceUploaderProps)
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { parseExcelFile, isProcessing } = useFileUpload();
   const { toast } = useToast();
-  
+
   // Simulate progress during upload
   useEffect(() => {
     let progressInterval: NodeJS.Timeout;
-    
+
     if (isUploading || uploadStatus === 'validating' || uploadStatus === 'processing') {
       // Reset progress when starting
       if (uploadProgress === 100) setUploadProgress(0);
-      
+
       progressInterval = setInterval(() => {
         setUploadProgress(prev => {
           if (prev >= 95) {
@@ -51,12 +51,12 @@ export function InvoiceUploader({ onUpload, isUploading }: InvoiceUploaderProps)
     } else if (uploadStatus === 'success') {
       setUploadProgress(100);
     }
-    
+
     return () => {
       clearInterval(progressInterval);
     };
   }, [isUploading, uploadStatus, uploadProgress]);
-  
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       setFile(e.target.files[0]);
@@ -64,17 +64,17 @@ export function InvoiceUploader({ onUpload, isUploading }: InvoiceUploaderProps)
       setUploadResult(null);
     }
   };
-  
+
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
     setIsDragging(false);
-    
+
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
       // Only accept Excel files
       const droppedFile = e.dataTransfer.files[0];
       const fileExtension = droppedFile.name.split('.').pop()?.toLowerCase();
-      
+
       if (fileExtension === 'xlsx' || fileExtension === 'xls') {
         setFile(droppedFile);
         setUploadStatus(null);
@@ -88,19 +88,19 @@ export function InvoiceUploader({ onUpload, isUploading }: InvoiceUploaderProps)
       }
     }
   };
-  
+
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
     setIsDragging(true);
   };
-  
+
   const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
     setIsDragging(false);
   };
-  
+
   const handleUpload = async () => {
     if (!file) {
       toast({
@@ -110,41 +110,54 @@ export function InvoiceUploader({ onUpload, isUploading }: InvoiceUploaderProps)
       });
       return;
     }
-    
+
     try {
       setUploadStatus('validating');
-      const data = await parseExcelFile(file);
-      
-      if (!data || data.length === 0) {
-        throw new Error("الملف فارغ أو لا يحتوي على بيانات صالحة");
+
+      if (!file) {
+        throw new Error("الرجاء اختيار ملف");
       }
-      
-      // Check if data has required fields
-      const requiredFields = ['invoiceNumber', 'clientCode', 'invoiceDate', 'totalAmount'];
+
+      const data = await parseExcelFile(file);
+      console.log("Parsed Excel data:", data);
+
+      if (!data || data.length === 0) {
+        throw new Error("ملف فارغ أو لا يحتوي على بيانات صالحة");
+      }
+
+      // Check if data has required fields - use exact field names from the Excel file
+      const requiredFields = [
+        { api: 'invoiceNumber', excel: 'Document Number' },
+        { api: 'clientCode', excel: 'Customer Code' },
+        { api: 'invoiceDate', excel: 'Document Date' },
+        { api: 'totalAmount', excel: 'Total Amount' }
+      ];
+
       const firstRow = data[0];
-      
+      console.log("First row fields:", Object.keys(firstRow));
+
       const missingFields = requiredFields.filter(field => 
         !Object.keys(firstRow).some(key => 
-          key.toLowerCase() === field.toLowerCase() || 
-          key.toLowerCase().replace(/[_\s]/g, '') === field.toLowerCase()
+          key === field.excel || 
+          key.toLowerCase() === field.excel.toLowerCase()
         )
       );
-      
+
       if (missingFields.length > 0) {
-        throw new Error(`الحقول المطلوبة غير موجودة: ${missingFields.join(', ')}`);
+        throw new Error(`الحقول المطلوبة غير موجودة: ${missingFields.map(f => f.excel).join(', ')}`);
       }
-      
+
       setUploadStatus('processing');
       const result = await onUpload(data);
       setUploadResult(result);
       setUploadStatus('success');
-      
+
       toast({
         title: "تم تحميل الفواتير بنجاح",
         description: `تم معالجة ${result.success} فاتورة بنجاح، ${result.failed} فشلت`,
         variant: "default",
       });
-      
+
     } catch (error) {
       setUploadStatus('error');
       toast({
@@ -154,25 +167,25 @@ export function InvoiceUploader({ onUpload, isUploading }: InvoiceUploaderProps)
       });
     }
   };
-  
+
   const handleFileSelect = () => {
     if (fileInputRef.current) {
       fileInputRef.current.click();
     }
   };
-  
+
   const resetUpload = () => {
     setFile(null);
     setUploadStatus(null);
     setUploadProgress(0);
     setUploadResult(null);
-    
+
     // Reset file input
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
   };
-  
+
   // Format today's date for showing invoice period
   const today = new Date();
   const formattedDate = today.toLocaleDateString('ar-EG', {
@@ -180,7 +193,7 @@ export function InvoiceUploader({ onUpload, isUploading }: InvoiceUploaderProps)
     month: 'long',
     year: 'numeric'
   });
-  
+
   return (
     <Card className="mb-6">
       <CardHeader>
@@ -216,7 +229,7 @@ export function InvoiceUploader({ onUpload, isUploading }: InvoiceUploaderProps)
                     <li className="text-blue-600">{uploadResult.modified} فاتورة تم تعديلها</li>
                   )}
                 </ul>
-                
+
                 {uploadResult.errors && uploadResult.errors.length > 0 && (
                   <div className="mt-2">
                     <details className="cursor-pointer">
@@ -234,7 +247,7 @@ export function InvoiceUploader({ onUpload, isUploading }: InvoiceUploaderProps)
                 )}
               </AlertDescription>
             </Alert>
-            
+
             <div className="flex justify-end">
               <Button onClick={resetUpload} size="sm" variant="outline">
                 تحميل ملف جديد
@@ -256,17 +269,17 @@ export function InvoiceUploader({ onUpload, isUploading }: InvoiceUploaderProps)
               ) : (
                 <FileSpreadsheet className="h-12 w-12 text-gray-400 mb-2" />
               )}
-              
+
               <h3 className="text-lg font-medium mb-2">
                 {file ? file.name : "رفع ملف الفواتير"}
               </h3>
-              
+
               <p className="text-sm text-gray-500 mb-4">
                 {file 
                   ? `${(file.size / 1024).toFixed(2)} كيلوبايت - ${file.type}` 
                   : "اسحب ملف Excel هنا أو انقر للاختيار"}
               </p>
-              
+
               {(uploadStatus === 'validating' || uploadStatus === 'processing' || isUploading) && (
                 <div className="w-full max-w-xs mb-4">
                   <Progress value={uploadProgress} className="h-2" />
@@ -277,7 +290,7 @@ export function InvoiceUploader({ onUpload, isUploading }: InvoiceUploaderProps)
                   </p>
                 </div>
               )}
-              
+
               <div className="flex space-x-2 space-x-reverse">
                 <input 
                   type="file" 
@@ -286,7 +299,7 @@ export function InvoiceUploader({ onUpload, isUploading }: InvoiceUploaderProps)
                   accept=".xlsx,.xls"
                   className="hidden"
                 />
-                
+
                 <Button 
                   type="button"
                   onClick={handleFileSelect}
@@ -296,7 +309,7 @@ export function InvoiceUploader({ onUpload, isUploading }: InvoiceUploaderProps)
                   <Upload className="h-4 w-4 ml-1" />
                   <span>اختيار ملف</span>
                 </Button>
-                
+
                 {file && (
                   <Button 
                     type="button"
