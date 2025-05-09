@@ -22,7 +22,7 @@ export const clients = pgTable("clients", {
   id: serial("id").primaryKey(),
   clientCode: text("client_code").notNull().unique(),
   clientName: text("client_name").notNull(),
-  salesRepName: text("sales_rep_name").notNull(),
+  salesRepName: text("sales_rep_name").notNull().default(''),
   balance: doublePrecision("balance").notNull().default(0),
   currency: currencyEnum("currency").notNull().default('EGP'),
 });

@@ -40,7 +40,7 @@ async function checkClients() {
           const clientData = {
             clientCode: String(row.CODE || "").trim(),
             clientName: String(row['CUSTOMER NAME'] || "").trim(),
-            salesRepName: String(row['SALES REP'] || "").trim(),
+            salesRepName: "", // Default empty string as salesRepName is not in the JSON
             currency: "EGP" // Default currency
           };
     
