@@ -12,7 +12,7 @@ import Clients from "@/pages/clients";
 import Invoices from "@/pages/invoices";
 import Payments from "@/pages/payments";
 import Reports from "@/pages/reports";
-import ClientUpload from "@/pages/client-upload";
+import ClientDataInfo from "@/pages/client-upload";
 import Settings from "@/pages/settings";
 
 function ProtectedRoute({ component: Component, ...rest }: any) {
