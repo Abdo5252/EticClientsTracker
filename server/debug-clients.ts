@@ -2,31 +2,34 @@
 import { storage } from './storage';
 
 /**
- * Debug function to check if clients are in the database 
+ * Debug client data in the database
  */
 async function debugClients() {
   try {
-    console.log("Checking client data in database...");
+    console.log('Checking client data in database...');
     
     // Get all clients
     const clients = await storage.getClients();
-    console.log(`Found ${clients.length} clients in database`);
+    console.log(`Total clients in database: ${clients.length}`);
     
     if (clients.length > 0) {
-      console.log("First 5 clients:");
-      clients.slice(0, 5).forEach(client => {
-        console.log(JSON.stringify(client, null, 2));
+      // Display the first 5 clients or all if fewer
+      const sampleClients = clients.slice(0, Math.min(5, clients.length));
+      console.log('Sample clients:');
+      sampleClients.forEach(client => {
+        console.log(`ID: ${client.id}, Code: ${client.clientCode}, Name: ${client.clientName}, Sales Rep: ${client.salesRepName}, Currency: ${client.currency}, Balance: ${client.balance}`);
       });
     } else {
-      console.log("No clients found in database");
-      
-      // Check for any database issues
-      console.log("Checking database connection...");
-      const dbTest = await storage.testConnection();
-      console.log("Database connection:", dbTest ? "OK" : "FAILED");
+      console.log('No clients found in the database.');
     }
+    
+    // Check API routes
+    console.log('\nAPI route information:');
+    console.log('GET /api/clients - Should return all clients');
+    console.log('These routes should be defined in server/routes.ts');
+    
   } catch (error) {
-    console.error("Error debugging clients:", error);
+    console.error('Error debugging clients:', error);
   }
 }
 

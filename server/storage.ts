@@ -1,8 +1,4 @@
-` tags.
 
-```python
-# Applying database test function to the MemStorage class.
-<replit_final_file>
 import { 
   users, type User, type InsertUser,
   clients, type Client, type InsertClient,

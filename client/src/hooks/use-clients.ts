@@ -29,12 +29,12 @@ export function useClients() {
             'Content-Type': 'application/json'
           }
         });
-        
+
         if (!response.ok) {
           console.error('Failed to fetch clients', response.status, response.statusText);
           throw new Error(`Failed to fetch clients: ${response.status} ${response.statusText}`);
         }
-        
+
         const data = await response.json();
         console.log('Client data received:', data.length ? `${data.length} clients` : 'empty array', data);
         return data;
