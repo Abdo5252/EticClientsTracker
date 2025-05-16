@@ -25,8 +25,13 @@ export function useAuth() {
       });
       
       if (res.ok) {
-        const userData = await res.json();
-        setUser(userData.user);
+        try {
+          const userData = await res.json();
+          setUser(userData.user);
+        } catch (parseError) {
+          console.error('Error parsing auth response:', parseError);
+          setUser(null);
+        }
       } else {
         setUser(null);
       }
@@ -56,10 +61,18 @@ export function useAuth() {
         setUser(userData.user);
         return true;
       } else {
-        const errorData = await res.json();
+        // Handle non-JSON responses safely
+        let errorMessage = 'اسم المستخدم أو كلمة المرور غير صحيحة';
+        try {
+          const errorData = await res.json();
+          errorMessage = errorData.message || errorMessage;
+        } catch (parseError) {
+          console.error('Error parsing error response:', parseError);
+        }
+        
         toast({
           title: 'خطأ في تسجيل الدخول',
-          description: errorData.message || 'اسم المستخدم أو كلمة المرور غير صحيحة',
+          description: errorMessage,
           variant: 'destructive',
         });
         return false;
