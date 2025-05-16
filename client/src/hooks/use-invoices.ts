@@ -9,6 +9,12 @@ export interface InvoiceFormData {
   currency: string;
 }
 
+export interface UploadInvoiceResult {
+  success: number;
+  failed: number;
+  errors?: string[];
+}
+
 // Mock data for development mode
 const MOCK_INVOICES = [
   {
@@ -117,6 +123,27 @@ export function useInvoices() {
       queryClient.invalidateQueries({ queryKey: ['clients'] });
     },
   });
+  
+  // Mock upload invoices function
+  const mockUploadInvoices = async (data: any[]): Promise<UploadInvoiceResult> => {
+    console.log("Mock uploading invoices:", data);
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    
+    // Return a mock success response
+    return {
+      success: data.length - 1, // Simulate one failed record
+      failed: 1,
+      errors: ["عميل غير موجود: Customer-999"]
+    };
+  };
+  
+  const uploadInvoicesMutation = useMutation({
+    mutationFn: mockUploadInvoices,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['invoices'] });
+      queryClient.invalidateQueries({ queryKey: ['clients'] });
+    },
+  });
 
   const getClientInvoices = (clientId: string) => {
     return useQuery({
@@ -134,6 +161,7 @@ export function useInvoices() {
     addInvoice: addInvoiceMutation.mutate,
     updateInvoice: updateInvoiceMutation.mutate,
     deleteInvoice: deleteInvoiceMutation.mutate,
+    uploadInvoices: uploadInvoicesMutation,
     getClientInvoices,
     refetch: fetchInvoices
   };

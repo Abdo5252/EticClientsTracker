@@ -8,19 +8,6 @@ import { Upload, Check, FileText } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/hooks/use-toast';
 
-// Development mode helper function to simulate invoice upload
-const simulateInvoiceUpload = async (data: any[]) => {
-  // Wait 1.5 seconds to simulate processing
-  await new Promise(resolve => setTimeout(resolve, 1500));
-  
-  // Return a mock success response
-  return {
-    success: data.length - 1, // Simulate one failed record
-    failed: 1,
-    errors: ["عميل غير موجود: Customer-999"]
-  };
-};
-
 export function InvoiceUploader() {
   // In development mode, we'll use a mock function
   const { uploadInvoices } = useInvoices();
@@ -108,16 +95,17 @@ export function InvoiceUploader() {
 
       setUploadStatus('processing');
       
-      // In development mode, use the mock function instead of the real service
-      console.log("Processing invoice data in development mode", data);
+      // Use the actual uploadInvoices from the hook
+      console.log("Processing invoice data", data);
       let result;
       
       try {
-        // Use the mock function instead of the real service
-        result = await simulateInvoiceUpload(data);
+        // Call the uploadInvoices mutation
+        result = await uploadInvoices.mutateAsync(data);
         console.log("Upload result:", result);
         
         setUploadResult(result);
+        setUploadProgress(100);
         setUploadStatus('success');
 
         toast({
