@@ -5,13 +5,14 @@ import admin from 'firebase-admin';
 import { db } from './firebase';
 import { doc, getDoc } from 'firebase/firestore';
 
+// Load fs and path modules at the top level
+import { readFileSync } from 'fs';
+import { join } from 'path';
+
 // Initialize Firebase Admin if not already initialized
 if (!admin.apps.length) {
   try {
     // Load the service account key file using fs
-    import { readFileSync } from 'fs';
-    import { join } from 'path';
-    
     const serviceAccountPath = join(process.cwd(), '.secrets', 'firebase-admin-key.json');
     const serviceAccountJson = JSON.parse(readFileSync(serviceAccountPath, 'utf8'));
     
