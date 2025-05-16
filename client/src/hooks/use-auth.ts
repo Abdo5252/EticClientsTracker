@@ -20,13 +20,13 @@ export function useAuth() {
   const checkAuth = async () => {
     try {
       setLoading(true);
-      const res = await fetch('/api/auth/user', {
+      const res = await fetch('/api/auth', {
         credentials: 'include',
       });
       
       if (res.ok) {
         const userData = await res.json();
-        setUser(userData);
+        setUser(userData.user);
       } else {
         setUser(null);
       }
@@ -42,11 +42,18 @@ export function useAuth() {
   const login = async (username: string, password: string): Promise<boolean> => {
     try {
       setLoading(true);
-      const res = await apiRequest('POST', '/api/auth/login', { username, password });
+      const res = await fetch('/api/login', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ username, password })
+      });
       
       if (res.ok) {
         const userData = await res.json();
-        setUser(userData);
+        setUser(userData.user);
         return true;
       } else {
         const errorData = await res.json();
@@ -73,7 +80,13 @@ export function useAuth() {
   // Logout function
   const logout = async () => {
     try {
-      await apiRequest('POST', '/api/auth/logout', {});
+      await fetch('/api/logout', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
       setUser(null);
       setLocation('/login');
     } catch (error) {
