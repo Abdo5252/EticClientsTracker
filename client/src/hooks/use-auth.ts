@@ -16,22 +16,10 @@ export function useAuth() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
 
-  // Check if user is authenticated (auto-authenticate for development)
+  // Check if user is authenticated
   const checkAuth = async () => {
     try {
       setLoading(true);
-      console.log('Development mode: Automatically authenticated');
-      
-      // In development, set a mock user
-      setUser({
-        id: "dev-user-id",
-        username: "admin",
-        displayName: "Development Admin",
-        role: "admin"
-      });
-      
-      // Original code (commented out)
-      /*
       console.log('Checking authentication...');
       const res = await fetch('/api/auth', {
         credentials: 'include',
@@ -64,7 +52,6 @@ export function useAuth() {
         }
         setUser(null);
       }
-      */
     } catch (error) {
       console.error('Auth check error:', error);
       setUser(null);
@@ -73,24 +60,10 @@ export function useAuth() {
     }
   };
 
-  // Login function (simplified for development)
+  // Login function
   const login = async (username: string, password: string): Promise<boolean> => {
     try {
       setLoading(true);
-      console.log('Development mode: Auto-login enabled');
-      
-      // In development, just set a mock user and return success
-      setUser({
-        id: "dev-user-id",
-        username: "admin",
-        displayName: "Development Admin",
-        role: "admin"
-      });
-      
-      return true;
-      
-      // Original login code (commented out)
-      /*
       console.log('Attempting login request...');
       const res = await fetch('/api/login', {
         method: 'POST',
@@ -148,7 +121,6 @@ export function useAuth() {
         });
         return false;
       }
-      */
     } catch (error) {
       console.error('Login error:', error);
       toast({
