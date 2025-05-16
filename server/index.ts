@@ -1,8 +1,21 @@
 import express, { type Request, Response, NextFunction } from "express";
-import { createServer } from "node:http";
+import cors from "cors";
 import { setupRoutes } from "./routes";
+import * as admin from 'firebase-admin';
+import { createServer } from "node:http";
 import { setupVite, serveStatic, log } from "./vite";
 import setupFirestore from "./setup-firestore";
+
+// Setup Firebase Admin SDK if not already initialized
+if (!admin.apps.length) {
+  admin.initializeApp({
+    credential: admin.credential.cert({
+      projectId: process.env.FIREBASE_PROJECT_ID || "eticclients",
+      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+      privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n')
+    })
+  });
+}
 
 const app = express();
 app.use(express.json({ limit: '50mb' }));
@@ -40,7 +53,7 @@ app.use((req, res, next) => {
 
 (async () => {
   await setupRoutes(app);
-  
+
   // Create HTTP server
   const server = createServer(app);
 

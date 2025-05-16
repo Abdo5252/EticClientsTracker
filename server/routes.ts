@@ -1,9 +1,5 @@
 
 import express from "express";
-import session from "express-session";
-import passport from "passport";
-import { Strategy as LocalStrategy } from "passport-local";
-import bcrypt from "bcrypt";
 import * as fs from 'fs';
 import * as path from 'path';
 import { 
@@ -11,141 +7,11 @@ import {
   where, orderBy, serverTimestamp, Timestamp, setDoc 
 } from "firebase/firestore";
 import { db } from "./firebase";
+import { requireAuth, devAuth } from "./auth";
 
 export function setupRoutes(app) {
-  // Authentication middleware
-  function requireAuth(req, res, next) {
-    if (req.isAuthenticated()) {
-      return next();
-    }
-    res.status(401).json({ message: "Authentication required" });
-  }
-
-  // Configure passport local strategy
-  passport.use(
-    new LocalStrategy(async (username, password, done) => {
-      try {
-        // Check user in Firestore
-        const usersRef = collection(db, "users");
-        const q = query(usersRef, where("username", "==", username));
-        const querySnapshot = await getDocs(q);
-        
-        if (querySnapshot.empty) {
-          return done(null, false, { message: "Invalid username or password" });
-        }
-        
-        const userDoc = querySnapshot.docs[0];
-        const user = { id: userDoc.id, ...userDoc.data() };
-        
-        // Compare password
-        const isValid = await bcrypt.compare(password, user.password);
-        if (!isValid) {
-          return done(null, false, { message: "Invalid username or password" });
-        }
-        
-        return done(null, user);
-      } catch (error) {
-        console.error("Authentication error:", error);
-        return done(error);
-      }
-    })
-  );
-
-  // Serialize user for session
-  passport.serializeUser((user, done) => {
-    done(null, user.id);
-  });
-
-  // Deserialize user from session
-  passport.deserializeUser(async (id, done) => {
-    try {
-      const userDoc = await getDoc(doc(db, "users", id));
-      if (!userDoc.exists()) {
-        return done(null, false);
-      }
-      done(null, { id: userDoc.id, ...userDoc.data() });
-    } catch (error) {
-      done(error);
-    }
-  });
-
-  // Initialize session middleware
-  app.use(
-    session({
-      secret: process.env.SESSION_SECRET || "eticclients-secret",
-      resave: false,
-      saveUninitialized: false,
-      cookie: {
-        secure: process.env.NODE_ENV === "production",
-        maxAge: 24 * 60 * 60 * 1000, // 24 hours
-      },
-    })
-  );
-
-  // Initialize Passport
-  app.use(passport.initialize());
-  app.use(passport.session());
-
-  // Login route
-  app.post("/api/login", (req, res, next) => {
-    passport.authenticate('local', (err, user, info) => {
-      if (err) {
-        console.error("Authentication error:", err);
-        return res.status(500).json({ success: false, message: "Internal server error" });
-      }
-      
-      if (!user) {
-        return res.status(401).json({ 
-          success: false, 
-          message: info?.message || "Invalid username or password"
-        });
-      }
-      
-      req.login(user, (err) => {
-        if (err) {
-          console.error("Login error:", err);
-          return res.status(500).json({ success: false, message: "Failed to establish session" });
-        }
-        
-        return res.json({ 
-          success: true, 
-          user: { 
-            id: user.id,
-            username: user.username,
-            displayName: user.displayName,
-            role: user.role
-          } 
-        });
-      });
-    })(req, res, next);
-  });
-
-  // Logout route
-  app.post("/api/logout", (req, res) => {
-    req.logout(function(err) {
-      if (err) {
-        return res.status(500).json({ message: "Error during logout", error: err });
-      }
-      res.json({ success: true });
-    });
-  });
-
-  // Check if authenticated
-  app.get("/api/auth", (req, res) => {
-    if (req.isAuthenticated()) {
-      res.json({ 
-        authenticated: true, 
-        user: { 
-          id: req.user.id,
-          username: req.user.username,
-          displayName: req.user.displayName,
-          role: req.user.role
-        } 
-      });
-    } else {
-      res.json({ authenticated: false });
-    }
-  });
+  // Use development auth middleware if in development environment
+  const authMiddleware = process.env.NODE_ENV === 'production' ? requireAuth : devAuth;
 
   // Get all clients
   app.get("/api/clients", requireAuth, async (req, res) => {

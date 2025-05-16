@@ -10,8 +10,8 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 
 const loginSchema = z.object({
-  username: z.string().min(1, t('login.usernameRequired')),
-  password: z.string().min(1, t('login.passwordRequired')),
+  email: z.string().email(t('login.validEmailRequired')),
+  password: z.string().min(6, t('login.passwordLengthRequired')),
 });
 
 type LoginFormValues = z.infer<typeof loginSchema>;
@@ -25,7 +25,7 @@ export default function Login() {
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      username: '',
+      email: '',
       password: '',
     },
   });
@@ -35,7 +35,7 @@ export default function Login() {
       setIsLoading(true);
       setError(null);
       
-      const success = await login(values.username, values.password);
+      const success = await login(values.email, values.password);
       
       if (success) {
         setLocation('/');
@@ -68,13 +68,14 @@ export default function Login() {
             
             <FormField
               control={form.control}
-              name="username"
+              name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-gray-700">{t('login.username')}</FormLabel>
+                  <FormLabel className="text-gray-700">{t('login.email')}</FormLabel>
                   <FormControl>
                     <Input 
-                      placeholder={t('login.username')} 
+                      type="email"
+                      placeholder={t('login.email')} 
                       {...field} 
                       className="w-full px-4 py-2 border border-gray-400 rounded-lg text-gray-800 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
                     />

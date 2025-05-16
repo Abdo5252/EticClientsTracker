@@ -67,3 +67,12 @@ args = "npm install"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "npm run dev"
+
+[[workflows.workflow]]
+name = "Migrate Users to Firebase Auth"
+author = 42779540
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "ts-node server/migrate-users-to-firebase-auth.ts"
