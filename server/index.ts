@@ -1,4 +1,5 @@
 import express, { type Request, Response, NextFunction } from "express";
+import { createServer } from "node:http";
 import { setupRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import setupFirestore from "./setup-firestore";
@@ -38,7 +39,10 @@ app.use((req, res, next) => {
 });
 
 (async () => {
-  const server = await setupRoutes(app);
+  await setupRoutes(app);
+  
+  // Create HTTP server
+  const server = createServer(app);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
