@@ -6,8 +6,12 @@ import { db } from './firebase';
 // Initialize Firebase Admin SDK
 if (!admin.apps.length) {
   try {
-    // Load the service account key file directly using ES modules
-    import serviceAccountJson from '../.secrets/firebase-admin-key.json' assert { type: 'json' };
+    // Load the service account key file using fs
+    import { readFileSync } from 'fs';
+    import { join } from 'path';
+    
+    const serviceAccountPath = join(process.cwd(), '.secrets', 'firebase-admin-key.json');
+    const serviceAccountJson = JSON.parse(readFileSync(serviceAccountPath, 'utf8'));
     
     admin.initializeApp({
       credential: admin.credential.cert(serviceAccountJson)
