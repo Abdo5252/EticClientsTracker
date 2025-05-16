@@ -1,16 +1,15 @@
-
-import { initializeApp } from 'firebase/app';
-import { getFirestore } from 'firebase/firestore';
+import { initializeApp } from "firebase/app";
+import { getFirestore } from "firebase/firestore";
 
 // Your Firebase configuration
 // Replace these with your actual Firebase project details
 const firebaseConfig = {
-  apiKey: process.env.FIREBASE_API_KEY || "your-api-key",
-  authDomain: process.env.FIREBASE_AUTH_DOMAIN || "your-project-id.firebaseapp.com",
-  projectId: process.env.FIREBASE_PROJECT_ID || "your-project-id",
-  storageBucket: process.env.FIREBASE_STORAGE_BUCKET || "your-project-id.appspot.com",
-  messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID || "your-messaging-sender-id",
-  appId: process.env.FIREBASE_APP_ID || "your-app-id"
+  apiKey: "AIzaSyBsBi538eOGJlkwRONZpD784fAl2JgQ--I",
+  authDomain: "eticclients.firebaseapp.com",
+  projectId: "eticclients",
+  storageBucket: "eticclients.firebasestorage.app",
+  messagingSenderId: "484585240155",
+  appId: "1:484585240155:web:b1df107c6cc0d5dae3b17e",
 };
 
 // Initialize Firebase
