@@ -87,6 +87,7 @@ app.use((req, res, next) => {
       }, () => {
         log(`serving on port ${port}`);
         log(`Server is accessible at https://${process.env.REPL_SLUG}.${process.env.REPL_OWNER}.repl.co`);
+      });`);
       });
     });
 })();
