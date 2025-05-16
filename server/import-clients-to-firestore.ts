@@ -1,7 +1,7 @@
 
 import { readFileSync } from 'fs';
 import path from 'path';
-import { db } from './firebase';
+import { db } from './firebase.js';
 import { collection, addDoc, getDocs, query, where } from 'firebase/firestore';
 
 /**
@@ -20,6 +20,13 @@ async function importClientsToFirestore() {
     const clientsData = JSON.parse(fileContent);
 
     console.log(`Found ${clientsData.length} clients in file`);
+    
+    if (clientsData.length > 0) {
+      console.log('Sample first record:');
+      console.log(clientsData[0]);
+      console.log('\nAvailable keys in the first record:');
+      console.log(Object.keys(clientsData[0]));
+    }
 
     // Process data
     const results = {
@@ -67,10 +74,14 @@ async function importClientsToFirestore() {
         // Add client to Firestore
         await addDoc(clientsCollection, clientData);
         results.success++;
-        console.log(`Successfully added client: ${clientData.clientName} (${clientData.clientCode})`);
+        
+        // Log progress every 50 clients
+        if (results.success % 50 === 0) {
+          console.log(`Progress: ${results.success} clients imported successfully`);
+        }
       } catch (error: any) {
         results.failed++;
-        results.errors.push(`Error processing client: ${error.message}`);
+        results.errors.push(`Error processing client ${client.CODE || 'unknown'}: ${error.message}`);
         console.error(`Error processing client:`, error);
       }
     }
@@ -79,6 +90,7 @@ async function importClientsToFirestore() {
     console.log(`Successful imports: ${results.success}`);
     console.log(`Failed imports: ${results.failed}`);
     console.log(`Skipped imports: ${results.skipped}`);
+    console.log(`Total processed: ${results.success + results.failed + results.skipped}`);
 
     if (results.errors.length > 0) {
       console.log('\nErrors:');
@@ -87,8 +99,8 @@ async function importClientsToFirestore() {
       });
     }
 
-  } catch (error) {
-    console.error('Import failed:', error);
+  } catch (error: any) {
+    console.error('Import failed:', error.message);
   }
 }
 

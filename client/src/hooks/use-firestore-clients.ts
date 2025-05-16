@@ -1,88 +1,107 @@
 
 import { useState, useEffect } from 'react';
 import { collection, getDocs, query, orderBy, doc, getDoc, addDoc, updateDoc, deleteDoc, where } from 'firebase/firestore';
-import { db } from '../../server/firebase';
+import { db } from '../../../server/firebase';
 
-interface Client {
-  id: string;
-  clientCode: string;
-  clientName: string;
-  salesRepName: string;
-  currency: string;
-  balance: number;
-}
-
+/**
+ * Hook for managing client data with Firestore
+ */
 export function useFirestoreClients() {
-  const [clients, setClients] = useState<Client[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [clients, setClients] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const fetchClients = async () => {
-    setIsLoading(true);
-    setError(null);
     try {
+      setLoading(true);
       const clientsCollection = collection(db, 'clients');
       const clientsQuery = query(clientsCollection, orderBy('clientName'));
-      const querySnapshot = await getDocs(clientsQuery);
+      const snapshot = await getDocs(clientsQuery);
       
-      const clientsList: Client[] = [];
-      querySnapshot.forEach((doc) => {
-        const data = doc.data();
-        clientsList.push({
-          id: doc.id,
-          clientCode: data.clientCode,
-          clientName: data.clientName,
-          salesRepName: data.salesRepName || '',
-          currency: data.currency || 'EGP',
-          balance: data.balance || 0,
-        });
-      });
+      const clientsList = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
       
       setClients(clientsList);
-    } catch (err) {
+      setError(null);
+    } catch (err: any) {
+      setError('Error fetching clients: ' + err.message);
       console.error('Error fetching clients:', err);
-      setError('Failed to load clients. Please try again later.');
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
-  const getClientByCode = async (code: string) => {
+  const getClient = async (clientId: string) => {
+    try {
+      const clientDoc = doc(db, 'clients', clientId);
+      const snapshot = await getDoc(clientDoc);
+      
+      if (snapshot.exists()) {
+        return { id: snapshot.id, ...snapshot.data() };
+      } else {
+        throw new Error('Client not found');
+      }
+    } catch (err: any) {
+      console.error('Error getting client:', err);
+      throw err;
+    }
+  };
+
+  const addClient = async (clientData: any) => {
     try {
       const clientsCollection = collection(db, 'clients');
-      const q = query(clientsCollection, where('clientCode', '==', code));
-      const querySnapshot = await getDocs(q);
-      
-      if (querySnapshot.empty) {
-        return null;
-      }
-      
-      const doc = querySnapshot.docs[0];
-      const data = doc.data();
-      
-      return {
-        id: doc.id,
-        clientCode: data.clientCode,
-        clientName: data.clientName,
-        salesRepName: data.salesRepName || '',
-        currency: data.currency || 'EGP',
-        balance: data.balance || 0,
-      };
-    } catch (err) {
-      console.error('Error getting client by code:', err);
-      return null;
+      const docRef = await addDoc(clientsCollection, {
+        ...clientData,
+        createdAt: new Date()
+      });
+      await fetchClients(); // Refresh the list
+      return docRef.id;
+    } catch (err: any) {
+      console.error('Error adding client:', err);
+      throw err;
     }
   };
 
+  const updateClient = async (clientId: string, clientData: any) => {
+    try {
+      const clientDoc = doc(db, 'clients', clientId);
+      await updateDoc(clientDoc, {
+        ...clientData,
+        updatedAt: new Date()
+      });
+      await fetchClients(); // Refresh the list
+    } catch (err: any) {
+      console.error('Error updating client:', err);
+      throw err;
+    }
+  };
+
+  const deleteClient = async (clientId: string) => {
+    try {
+      const clientDoc = doc(db, 'clients', clientId);
+      await deleteDoc(clientDoc);
+      await fetchClients(); // Refresh the list
+    } catch (err: any) {
+      console.error('Error deleting client:', err);
+      throw err;
+    }
+  };
+
+  // Load clients on initial render
   useEffect(() => {
     fetchClients();
   }, []);
 
   return {
     clients,
-    isLoading,
+    loading,
     error,
-    refetch: fetchClients,
-    getClientByCode
+    fetchClients,
+    getClient,
+    addClient,
+    updateClient,
+    deleteClient
   };
 }
