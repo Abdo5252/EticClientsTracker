@@ -13,12 +13,16 @@ import {
 import { db } from "./firebase";
 
 export function setupRoutes(app) {
-  // Authentication middleware
+  // Authentication middleware (disabled for development)
   function requireAuth(req, res, next) {
-    if (req.isAuthenticated()) {
-      return next();
-    }
-    res.status(401).json({ message: "Authentication required" });
+    // Skip authentication check during development
+    return next();
+    
+    // Original code (commented out)
+    // if (req.isAuthenticated()) {
+    //   return next();
+    // }
+    // res.status(401).json({ message: "Authentication required" });
   }
 
   // Configure passport local strategy
@@ -130,21 +134,33 @@ export function setupRoutes(app) {
     });
   });
 
-  // Check if authenticated
+  // Check if authenticated (auto-authenticate for development)
   app.get("/api/auth", (req, res) => {
-    if (req.isAuthenticated()) {
-      res.json({ 
-        authenticated: true, 
-        user: { 
-          id: req.user.id,
-          username: req.user.username,
-          displayName: req.user.displayName,
-          role: req.user.role
-        } 
-      });
-    } else {
-      res.json({ authenticated: false });
-    }
+    // Always return authenticated: true during development
+    res.json({ 
+      authenticated: true, 
+      user: { 
+        id: "dev-user-id",
+        username: "admin",
+        displayName: "Development Admin",
+        role: "admin"
+      } 
+    });
+    
+    // Original code (commented out)
+    // if (req.isAuthenticated()) {
+    //   res.json({ 
+    //     authenticated: true, 
+    //     user: { 
+    //       id: req.user.id,
+    //       username: req.user.username,
+    //       displayName: req.user.displayName,
+    //       role: req.user.role
+    //     } 
+    //   });
+    // } else {
+    //   res.json({ authenticated: false });
+    // }
   });
 
   // Get all clients
