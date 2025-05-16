@@ -1,7 +1,7 @@
 import express, { type Request, Response, NextFunction } from "express";
 import cors from "cors";
 import { setupRoutes } from "./routes";
-import * as admin from 'firebase-admin';
+import admin from 'firebase-admin';
 import { createServer } from "node:http";
 import { setupVite, serveStatic, log } from "./vite";
 import setupFirestore from "./setup-firestore";
