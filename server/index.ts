@@ -9,11 +9,11 @@ import setupFirestore from "./setup-firestore";
 // Setup Firebase Admin SDK if not already initialized
 if (!admin.apps.length) {
   try {
-    // Load the service account key file directly
-    const serviceAccount = require('../.secrets/firebase-admin-key.json');
+    // Load the service account key file directly using ES modules
+    import serviceAccountJson from '../.secrets/firebase-admin-key.json' assert { type: 'json' };
     
     admin.initializeApp({
-      credential: admin.credential.cert(serviceAccount)
+      credential: admin.credential.cert(serviceAccountJson)
     });
     console.log("Firebase Admin initialized successfully with service account");
   } catch (error) {
