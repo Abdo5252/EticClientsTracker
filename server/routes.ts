@@ -87,16 +87,37 @@ export function setupRoutes(app) {
   app.use(passport.session());
 
   // Login route
-  app.post("/api/login", passport.authenticate("local"), (req, res) => {
-    res.json({ 
-      success: true, 
-      user: { 
-        id: req.user.id,
-        username: req.user.username,
-        displayName: req.user.displayName,
-        role: req.user.role
-      } 
-    });
+  app.post("/api/login", (req, res, next) => {
+    passport.authenticate('local', (err, user, info) => {
+      if (err) {
+        console.error("Authentication error:", err);
+        return res.status(500).json({ success: false, message: "Internal server error" });
+      }
+      
+      if (!user) {
+        return res.status(401).json({ 
+          success: false, 
+          message: info?.message || "Invalid username or password"
+        });
+      }
+      
+      req.login(user, (err) => {
+        if (err) {
+          console.error("Login error:", err);
+          return res.status(500).json({ success: false, message: "Failed to establish session" });
+        }
+        
+        return res.json({ 
+          success: true, 
+          user: { 
+            id: user.id,
+            username: user.username,
+            displayName: user.displayName,
+            role: user.role
+          } 
+        });
+      });
+    })(req, res, next);
   });
 
   // Logout route
