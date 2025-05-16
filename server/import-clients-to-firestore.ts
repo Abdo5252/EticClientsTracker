@@ -1,5 +1,5 @@
 
-import { collection, addDoc, getDocs, query, where } from "firebase/firestore";
+import { collection, addDoc, getDocs, query, where, serverTimestamp } from "firebase/firestore";
 import { readFileSync } from 'fs';
 import path from 'path';
 import { db } from './firebase';
@@ -27,12 +27,12 @@ async function importClientsToFirestore() {
       try {
         // Create a properly formatted client object with all required fields
         const clientData = {
-          clientCode: String(client.CODE || "").trim(),
-          clientName: String(client['CUSTOMER NAME'] || "").trim(),
-          salesRepName: "", // Default empty string as salesRepName is not in the JSON
-          currency: "EGP", // Default currency
-          balance: 0,      // Initial balance
-          createdAt: new Date()
+          clientCode: String(client.CODE || client.clientCode || "").trim(),
+          clientName: String(client['CUSTOMER NAME'] || client.clientName || "").trim(),
+          salesRepName: String(client['SALES REP'] || client.salesRepName || "").trim(),
+          currency: client.currency || "EGP", // Default currency
+          balance: Number(client.balance || 0),      // Initial balance
+          createdAt: serverTimestamp()
         };
 
         // Skip empty or invalid entries
@@ -64,7 +64,7 @@ async function importClientsToFirestore() {
           console.log(`Progress: ${successCount} clients imported successfully`);
         }
       } catch (error) {
-        console.error(`Error importing client ${client.CODE || 'unknown'}:`, error);
+        console.error(`Error importing client ${client.CODE || client.clientCode || 'unknown'}:`, error);
         errorCount++;
       }
     }
@@ -73,6 +73,15 @@ async function importClientsToFirestore() {
     console.log(`- Successfully imported: ${successCount} clients`);
     console.log(`- Skipped: ${skipCount} clients`);
     console.log(`- Errors: ${errorCount} clients`);
+    
+    // Add a log entry to Firestore activities
+    if (successCount > 0) {
+      await addDoc(collection(db, 'activities'), {
+        activityType: 'system',
+        description: `تم استيراد ${successCount} عميل الى قاعدة البيانات`,
+        timestamp: serverTimestamp()
+      });
+    }
   } catch (error) {
     console.error('Error in import process:', error);
   }
