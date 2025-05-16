@@ -16,7 +16,7 @@ if (!admin.apps.length) {
     // Load the service account key file using fs
     const serviceAccountPath = join(process.cwd(), '.secrets', 'firebase-admin-key.json');
     const serviceAccountJson = JSON.parse(readFileSync(serviceAccountPath, 'utf8'));
-    
+
     admin.initializeApp({
       credential: admin.credential.cert(serviceAccountJson)
     });

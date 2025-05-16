@@ -27,6 +27,7 @@ export function useClients() {
     deleteClient 
   } = useFirestoreClients();
 
+  // Use real Firestore data
   const clientsQuery = useQuery({
     queryKey: ['clients'],
     queryFn: fetchClients,

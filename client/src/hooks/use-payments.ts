@@ -1,4 +1,3 @@
-
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useFirestorePayments, Payment } from './use-firestore-payments';
 
@@ -27,6 +26,7 @@ export function usePayments() {
     deletePayment 
   } = useFirestorePayments();
 
+  // Use real Firestore data
   const paymentsQuery = useQuery({
     queryKey: ['payments'],
     queryFn: fetchPayments,
@@ -48,6 +48,8 @@ export function usePayments() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['payments'] });
+      queryClient.invalidateQueries({ queryKey: ['invoices'] });
+      queryClient.invalidateQueries({ queryKey: ['clients'] });
     },
   });
 

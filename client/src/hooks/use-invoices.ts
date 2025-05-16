@@ -66,40 +66,15 @@ export function useInvoices() {
     deleteInvoice 
   } = useFirestoreInvoices();
 
-  // In development mode, use mock data instead of Firebase
-  const mockFetchInvoices = async () => {
-    console.log("Using mock invoice data for development");
-    await new Promise(resolve => setTimeout(resolve, 500)); // Simulate network delay
-    return MOCK_INVOICES;
-  };
-
+  // Use real Firestore data
   const invoicesQuery = useQuery({
     queryKey: ['invoices'],
-    queryFn: mockFetchInvoices, // Use mock data in development
+    queryFn: fetchInvoices,
     refetchOnWindowFocus: true
   });
 
-  // Development mode mock mutation functions
-  const mockAddInvoice = async (data: any) => {
-    console.log("Mock adding invoice:", data);
-    await new Promise(resolve => setTimeout(resolve, 500));
-    return "new-invoice-id";
-  };
-
-  const mockUpdateInvoice = async (params: { id: string; data: any }) => {
-    console.log("Mock updating invoice:", params);
-    await new Promise(resolve => setTimeout(resolve, 500));
-    return true;
-  };
-
-  const mockDeleteInvoice = async (id: string) => {
-    console.log("Mock deleting invoice:", id);
-    await new Promise(resolve => setTimeout(resolve, 500));
-    return true;
-  };
-
   const addInvoiceMutation = useMutation({
-    mutationFn: mockAddInvoice, // Use mock function in development
+    mutationFn: addInvoice,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['invoices'] });
       queryClient.invalidateQueries({ queryKey: ['clients'] });
@@ -108,7 +83,7 @@ export function useInvoices() {
 
   const updateInvoiceMutation = useMutation({
     mutationFn: ({ id, data }: { id: string; data: Partial<InvoiceFormData> }) => {
-      return mockUpdateInvoice({ id, data }); // Use mock function in development
+      return updateInvoice(id, data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['invoices'] });
@@ -117,28 +92,61 @@ export function useInvoices() {
   });
 
   const deleteInvoiceMutation = useMutation({
-    mutationFn: mockDeleteInvoice, // Use mock function in development
+    mutationFn: deleteInvoice,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['invoices'] });
       queryClient.invalidateQueries({ queryKey: ['clients'] });
     },
   });
   
-  // Mock upload invoices function
-  const mockUploadInvoices = async (data: any[]): Promise<UploadInvoiceResult> => {
-    console.log("Mock uploading invoices:", data);
-    await new Promise(resolve => setTimeout(resolve, 1500));
+  // Real upload invoices function
+  const uploadInvoicesReal = async (data: any[]): Promise<UploadInvoiceResult> => {
+    console.log("Uploading invoices to Firestore:", data);
     
-    // Return a mock success response
-    return {
-      success: data.length - 1, // Simulate one failed record
-      failed: 1,
-      errors: ["عميل غير موجود: Customer-999"]
+    const results: UploadInvoiceResult = {
+      success: 0,
+      failed: 0,
+      errors: []
     };
+    
+    // Process each invoice
+    for (const invoice of data) {
+      try {
+        // Check if client exists
+        const clientsRef = collection(db, 'clients');
+        const clientQuery = query(clientsRef, where('clientNumber', '==', invoice.clientNumber));
+        const clientSnapshot = await getDocs(clientQuery);
+        
+        if (clientSnapshot.empty) {
+          results.failed++;
+          results.errors?.push(`عميل غير موجود: ${invoice.clientNumber}`);
+          continue;
+        }
+        
+        const clientId = clientSnapshot.docs[0].id;
+        
+        // Add the invoice
+        await addInvoice({
+          invoiceNumber: invoice.invoiceNumber,
+          clientId: clientId,
+          invoiceDate: new Date(invoice.invoiceDate),
+          totalAmount: invoice.totalAmount,
+          currency: invoice.currency || 'EGP'
+        });
+        
+        results.success++;
+      } catch (error) {
+        console.error("Error uploading invoice:", error);
+        results.failed++;
+        results.errors?.push(`خطأ في معالجة الفاتورة ${invoice.invoiceNumber}: ${error}`);
+      }
+    }
+    
+    return results;
   };
   
   const uploadInvoicesMutation = useMutation({
-    mutationFn: mockUploadInvoices,
+    mutationFn: uploadInvoicesReal,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['invoices'] });
       queryClient.invalidateQueries({ queryKey: ['clients'] });
