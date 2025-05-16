@@ -18,7 +18,7 @@ run = ["sh", "-c", "npm run dev"]
 deploymentTarget = "cloudrun"
 
 [workflows]
-runButton = "Start With TSX"
+runButton = "Start With TSX Fixed"
 
 [[workflows.workflow]]
 name = "Project"
@@ -76,3 +76,20 @@ mode = "sequential"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "ts-node server/migrate-users-to-firebase-auth.ts"
+
+[[workflows.workflow]]
+name = "Start With TSX Fixed"
+author = 42779540
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "pkill -f \"node|tsx\" || true"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm install"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm run dev"
