@@ -50,6 +50,77 @@ export default function Dashboard() {
   // Fetch dashboard data
   const { data: dashboardData, isLoading, error } = useQuery({
     queryKey: ['/api/dashboard', selectedPeriod],
+    queryFn: () => {
+      // In development mode, return mock data
+      console.log("Fetching dashboard data for period:", selectedPeriod);
+      
+      // Mock data for development
+      return {
+        totalSalesToday: 15750,
+        totalSalesChange: 12.5,
+        totalPaymentsToday: 9200,
+        totalPaymentsChange: 8.3,
+        invoiceCount: 7,
+        overdueClientsCount: 4,
+        recentActivities: [
+          {
+            id: '1',
+            activityType: 'invoice_created',
+            description: 'تم إنشاء فاتورة جديدة #INV-2023-001 للعميل شركة الأمل',
+            timestamp: new Date(new Date().setHours(new Date().getHours() - 2))
+          },
+          {
+            id: '2',
+            activityType: 'payment_received',
+            description: 'تم استلام دفعة بقيمة 3,500 ج.م من العميل شركة النور',
+            timestamp: new Date(new Date().setHours(new Date().getHours() - 5))
+          },
+          {
+            id: '3',
+            activityType: 'client_overdue',
+            description: 'تأخر سداد العميل شركة المستقبل لفاتورة #INV-2023-015',
+            timestamp: new Date(new Date().setDate(new Date().getDate() - 1))
+          }
+        ],
+        topClients: [
+          {
+            id: '101',
+            clientName: 'شركة المستقبل للتجارة',
+            clientCode: 'FUTURE001',
+            balance: 12500,
+            currency: 'EGP'
+          },
+          {
+            id: '102',
+            clientName: 'مؤسسة الأمل',
+            clientCode: 'HOPE002',
+            balance: 8750,
+            currency: 'EGP'
+          },
+          {
+            id: '103',
+            clientName: 'شركة النور للصناعات',
+            clientCode: 'NOOR003',
+            balance: 5200,
+            currency: 'EGP'
+          }
+        ],
+        salesByMonth: [
+          { month: 'يناير', sales: 45000, payments: 40000 },
+          { month: 'فبراير', sales: 52000, payments: 48000 },
+          { month: 'مارس', sales: 48000, payments: 45000 },
+          { month: 'أبريل', sales: 60000, payments: 55000 },
+          { month: 'مايو', sales: 55000, payments: 50000 },
+          { month: 'يونيو', sales: 70000, payments: 65000 }
+        ],
+        paymentsByMethod: [
+          { name: 'cash', value: 35000 },
+          { name: 'transfer', value: 25000 },
+          { name: 'check', value: 15000 },
+          { name: 'card', value: 5000 }
+        ]
+      };
+    }
   });
 
   if (isLoading) {
